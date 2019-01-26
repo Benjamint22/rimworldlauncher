@@ -25,5 +25,36 @@ namespace RimWorldLauncher.Views.Main
         {
             InitializeComponent();
         }
+
+        private void LvProfiles_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void BtnCreate_OnClick(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void BtnModpacks_OnClick(object sender, RoutedEventArgs e)
+        {
+            App.Instance.SwitchMainWindow(new WinModpacks(), this);
+            Hide();
+        }
+
+        private void BtnPlay_OnClick(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void BtnEdit_OnClick(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void BtnDelete_OnClick(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

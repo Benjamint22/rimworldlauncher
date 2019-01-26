@@ -15,7 +15,7 @@ namespace RimWorldLauncher.Models
 {
     public class ModpacksReader
     {
-        public List<Modpack> List { get; set; }
+        public ObservableCollection<Modpack> List { get; set; }
 
         public DirectoryInfo Directory { get; }
 
@@ -32,7 +32,18 @@ namespace RimWorldLauncher.Models
 
         public void Refresh()
         {
-            List = Directory.GetFiles().Select((file) => new Modpack(file)).ToList();
+            if (List == null)
+            {
+                List = new ObservableCollection<Modpack>();
+            }
+            else
+            {
+                List.Clear();
+            }
+            foreach (var file in Directory.GetFiles())
+            {
+                List.Add(new Modpack(file));
+            }
         }
     }
 }

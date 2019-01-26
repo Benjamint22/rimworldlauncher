@@ -9,8 +9,11 @@ using Microsoft.Win32;
 
 namespace RimWorldLauncher.Models
 {
-    public class LauncherConfig : XmlConfig
+    public class LauncherConfig : MixinXmlConfig
     {
+        public FileInfo Source { get; set; }
+        public XDocument XmlRoot { get; set; }
+
         public LauncherConfig()
         {
             FileInfo configFile = new FileInfo("launcher.xml");
@@ -79,7 +82,7 @@ namespace RimWorldLauncher.Models
         private void LoadConfig(FileInfo config)
         {
             Source = config;
-            Load();
+            this.Load();
         }
 
         private void InitializeConfig(FileInfo config)
@@ -92,7 +95,7 @@ namespace RimWorldLauncher.Models
                 )
             );
             SetDataFolder(@"%APPDATA%\..\LocalLow\Ludeon Studios\RimWorld by Ludeon Studios");
-            Save();
+            this.Save();
         }
     }
 }

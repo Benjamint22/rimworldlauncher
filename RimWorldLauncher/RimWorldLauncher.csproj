@@ -60,10 +60,12 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="FileSystemInfoExtension.cs" />
+    <Compile Include="DependencyObjectExtensions.cs" />
+    <Compile Include="FileSystemInfoExtensions.cs" />
+    <Compile Include="IEnumerableExtensions.cs" />
     <Compile Include="Models\LauncherConfig.cs" />
     <Compile Include="Models\ModpacksReader.cs" />
-    <Compile Include="Models\XmlConfig.cs" />
+    <Compile Include="Mixins\MixinXmlConfig.cs" />
     <Compile Include="Views\Main\ModEdit\WinModpackEdit.xaml.cs">
       <DependentUpon>WinModpackEdit.xaml</DependentUpon>
     </Compile>
@@ -90,11 +92,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Main\PgModpacks.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Main\PgProfiles.xaml">
+    <Page Include="Views\Main\WinModpacks.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -110,11 +108,8 @@
     <Compile Include="Views\Main\PgMod.xaml.cs">
       <DependentUpon>PgMod.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Main\PgModpacks.xaml.cs">
-      <DependentUpon>PgModpacks.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Main\PgProfiles.xaml.cs">
-      <DependentUpon>PgProfiles.xaml</DependentUpon>
+    <Compile Include="Views\Main\WinModpacks.xaml.cs">
+      <DependentUpon>WinModpacks.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

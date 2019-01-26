@@ -8,6 +8,7 @@ using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Forms;
+using RimWorldLauncher.Models;
 using Application = System.Windows.Application;
 using MessageBox = System.Windows.MessageBox;
 

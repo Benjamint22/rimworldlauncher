@@ -19,25 +19,43 @@ namespace RimWorldLauncher
         public static LauncherConfig Config { get; set; }
         public static InstalledMods Mods { get; set; }
         public static ModpacksReader Modpacks { get; set; }
-
-        public App()
-        {
-            Config = new LauncherConfig();
-            ShutdownMode = ShutdownMode.OnExplicitShutdown;
-        }
+        public static App Instance { get; private set; }
 
         public static void ShowError(string message, string caption = "Error")
         {
             MessageBox.Show(message, caption, MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
+        public App()
+        {
+            Instance = this;
+            Config = new LauncherConfig();
+            ShutdownMode = ShutdownMode.OnExplicitShutdown;
+        }
+
+        public void SwitchMainWindow(Window newWindow, Window parentWindow = null)
+        {
+            if (MainWindow != null)
+            {
+                MainWindow.Closed -= MainWindow_Closed;
+            }
+            MainWindow = newWindow;
+            if (parentWindow == null)
+            {
+                MainWindow.Closed += MainWindow_Closed;
+            }
+            else
+            {
+                MainWindow.Closed += (sender, e) => SwitchMainWindow(parentWindow);
+            }
+            MainWindow.Show();
+        }
+
         private void OpenMainWindow()
         {
-            MainWindow = new WinMain();
-            MainWindow.Closed += MainWindow_Closed;
-            MainWindow.Show();
             Mods = new InstalledMods();
             Modpacks = new ModpacksReader();
+            SwitchMainWindow(new WinMain());
         }
 
         private void App_OnStartup(object sender, StartupEventArgs e)

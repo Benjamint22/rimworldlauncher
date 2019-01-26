@@ -31,12 +31,11 @@ namespace RimWorldLauncher.Views.Main.ModEdit
         {
             if (Modpack == null)
             {
-                // TODO
+                BtnSave.Content = "Create";
             }
             else
             {
                 TxtName.Text = Modpack.DisplayName;
-                TxtIdentifier.Text = Modpack.Identifier;
             }
         }
 
@@ -47,14 +46,19 @@ namespace RimWorldLauncher.Views.Main.ModEdit
                 App.ShowError("\"Name\" cannot be empty.");
                 return;
             }
-            if (!string.IsNullOrWhiteSpace(TxtIdentifier.Text) && App.Modpacks.List.Any((modpack) => modpack != Modpack && modpack.Identifier.ToLower() == TxtIdentifier.Text.ToLower()))
+            if (Modpack == null)
             {
-                App.ShowError("A modpack with this identifier already exists.");
-                return;
+                Modpack = new Modpack(
+                    TxtName.Text,
+                    TxtName.Text
+                );
             }
-            Modpack.DisplayName = TxtName.Text;
-            Modpack.Identifier = string.IsNullOrWhiteSpace(TxtIdentifier.Text) ? TxtName.Text : TxtIdentifier.Text;
-            Modpack.Save();
+            else
+            {
+                Modpack.DisplayName = TxtName.Text;
+                Modpack.Save();
+            }
+
             DialogResult = true;
         }
 

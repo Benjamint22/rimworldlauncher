@@ -128,9 +128,6 @@
     <value>Saves</value>
   </data>
   <data name="InstalledModsFolderName" xml:space="preserve">
-    <value>Launcher_InstalledMods</value>
-  </data>
-  <data name="LegacyModsFolderName" xml:space="preserve">
     <value>Mods</value>
   </data>
 </root>

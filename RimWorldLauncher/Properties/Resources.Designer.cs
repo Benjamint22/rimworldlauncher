@@ -61,7 +61,7 @@ namespace RimWorldLauncher.Properties {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Launcher_InstalledMods.
+        ///   Looks up a localized string similar to Mods.
         /// </summary>
         internal static string InstalledModsFolderName {
             get {
@@ -75,15 +75,6 @@ namespace RimWorldLauncher.Properties {
         internal static string LauncherName {
             get {
                 return ResourceManager.GetString("LauncherName", resourceCulture);
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized string similar to Mods.
-        /// </summary>
-        internal static string LegacyModsFolderName {
-            get {
-                return ResourceManager.GetString("LegacyModsFolderName", resourceCulture);
             }
         }
         

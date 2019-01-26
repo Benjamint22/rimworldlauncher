@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace RimWorldLauncher
 {
-    public static class FileSystemInfoExtension
+    public static class FileSystemInfoExtensions
     {
         /// <summary>
         ///     Command to set the reparse point data block.
@@ -42,6 +42,34 @@ namespace RimWorldLauncher
             ECreationDisposition dwCreationDisposition,
             EFileAttributes dwFlagsAndAttributes,
             IntPtr hTemplateFile);
+
+        private static Dictionary<string, FileSystemWatcher> _fileWatchers = new Dictionary<string, FileSystemWatcher>();
+
+        public static FileSystemWatcher Watch(this FileInfo info, FileSystemEventHandler onChanged)
+        {
+            FileSystemWatcher watcher;
+            if (_fileWatchers.ContainsKey(info.FullName))
+            {
+                watcher = info.GetWatcher();
+            }
+            else
+            {
+                _fileWatchers[info.FullName] = watcher = new FileSystemWatcher()
+                {
+                    Path = info.DirectoryName,
+                    Filter = info.Name,
+                    NotifyFilter = NotifyFilters.LastWrite,
+                    EnableRaisingEvents = true
+                };
+            }
+            watcher.Changed += onChanged;
+            return watcher;
+        }
+
+        public static FileSystemWatcher GetWatcher(this FileInfo info)
+        {
+            return _fileWatchers.ContainsKey(info.FullName) ? _fileWatchers[info.FullName] : null;
+        }
 
         public static bool IsSymlink(this FileSystemInfo info)
         {
