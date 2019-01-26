@@ -45,19 +45,25 @@ namespace RimWorldLauncher
 
         private static Dictionary<string, FileSystemWatcher> _fileWatchers = new Dictionary<string, FileSystemWatcher>();
 
-        public static FileSystemWatcher Watch(this FileInfo info, FileSystemEventHandler onChanged)
+        /// <summary>
+        /// Starts watching <paramref name="file"/> for change in its content.
+        /// </summary>
+        /// <param name="file">The file to watch.</param>
+        /// <param name="onChanged">The event to run when <paramref name="file"/> is changed.</param>
+        /// <returns>A FileSystemWatcher that can be used to control the execution of <paramref name="onChanged"/>.</returns>
+        public static FileSystemWatcher Watch(this FileInfo file, FileSystemEventHandler onChanged)
         {
             FileSystemWatcher watcher;
-            if (_fileWatchers.ContainsKey(info.FullName))
+            if (_fileWatchers.ContainsKey(file.FullName))
             {
-                watcher = info.GetWatcher();
+                watcher = file.GetWatcher();
             }
             else
             {
-                _fileWatchers[info.FullName] = watcher = new FileSystemWatcher()
+                _fileWatchers[file.FullName] = watcher = new FileSystemWatcher()
                 {
-                    Path = info.DirectoryName,
-                    Filter = info.Name,
+                    Path = file.DirectoryName,
+                    Filter = file.Name,
                     NotifyFilter = NotifyFilters.LastWrite,
                     EnableRaisingEvents = true
                 };
@@ -66,16 +72,34 @@ namespace RimWorldLauncher
             return watcher;
         }
 
-        public static FileSystemWatcher GetWatcher(this FileInfo info)
+        /// <summary>
+        /// Obtains the FileSystemWatcher of <paramref name="file"/> or null.
+        /// </summary>
+        /// <param name="file">The file to obtain the watcher for.</param>
+        /// <returns>The watcher of <paramref name="file"/> or null.</returns>
+        public static FileSystemWatcher GetWatcher(this FileInfo file)
         {
-            return _fileWatchers.ContainsKey(info.FullName) ? _fileWatchers[info.FullName] : null;
+            return _fileWatchers.ContainsKey(file.FullName) ? _fileWatchers[file.FullName] : null;
         }
 
+        /// <summary>
+        /// Checks if <paramref name="info"/> is a symbolic link or a directory junction.
+        /// </summary>
+        /// <param name="info">The file or directory to check.</param>
+        /// <returns>true if<paramref name="info"/> is a symbolic link or a directory junction.</returns>
         public static bool IsSymlink(this FileSystemInfo info)
         {
             return info.Attributes.HasFlag(FileAttributes.ReparsePoint);
         }
 
+        /// <summary>
+        /// Creates a directory junction inside <paramref name="parent"/> with the name <paramref name="junctionPointName"/>, which leads to <paramref name="targetDir"/>.
+        /// </summary>
+        /// <param name="parent">The parent folder of the new junction.</param>
+        /// <param name="junctionPointName">The name of the junction.</param>
+        /// <param name="targetDir">The directory that the junction should lead to.</param>
+        /// <param name="overwrite">Whether or not to overwrite the junction if it already exists.</param>
+        /// <returns></returns>
         public static DirectoryInfo CreateJunction(this DirectoryInfo parent, string junctionPointName, DirectoryInfo targetDir, bool overwrite)
         {
             if (!targetDir.Exists)
@@ -85,7 +109,9 @@ namespace RimWorldLauncher
             if (junctionPoint != null)
             {
                 if (!overwrite)
-                    throw new IOException("Directory already exists and overwrite parameter is false.");
+                    throw new IOException("Directory already exists.");
+                if (!junctionPoint.IsSymlink())
+                    throw new IOException($"Cannot overwrite the {junctionPoint.FullName} as it is not a directory junction. Only a directory junction can be overwritten.");
             }
             else
             {
