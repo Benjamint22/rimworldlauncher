@@ -19,18 +19,13 @@ namespace RimWorldLauncher.Models
         public event NotifyCollectionChangedEventHandler CollectionChanged;
         public event PropertyChangedEventHandler PropertyChanged;
 
-        public static string FilterIdentifier(string unfilteredIdentifier)
-        {
-            return Regex.Replace(Regex.Replace(unfilteredIdentifier.ToLower(), @"[\s\-]", "_"), @"[^a-zA-Z0-9_\.]", "");
-        }
-
         public string DisplayName
         {
             get => XmlRoot.Element("modpack").Element("displayName").Value;
             set
             {
                 XmlRoot.Element("modpack").Element("displayName").Value = value;
-                PropertyChanged(this, new PropertyChangedEventArgs("DisplayName"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DisplayName"));
                 this.Save();
             }
         }
@@ -40,14 +35,14 @@ namespace RimWorldLauncher.Models
             get => Source.Name.EndsWith(".xml") ? Source.Name.Remove(Source.Name.Length - 4) : Source.Name;
             set
             {
-                var desiredName = $"{FilterIdentifier(value)}.xml";
+                var desiredName = $"{value.Sanitize()}.xml";
                 if (App.Modpacks.Directory.EnumerateFiles().Any((file) => file.Name != Source.Name && file.Name.ToLower() == desiredName.ToLower()))
                 {
                     throw new ArgumentException("The identifier must be unique.");
                 }
                 string newDestination = Path.Combine(App.Modpacks.Directory.FullName, desiredName);
                 Source.MoveTo(newDestination);
-                PropertyChanged(this, new PropertyChangedEventArgs("Identifier"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Identifier"));
             }
         }
 
@@ -66,7 +61,7 @@ namespace RimWorldLauncher.Models
 
         public Modpack(string displayName, string identifier)
         {
-            identifier = FilterIdentifier(identifier);
+            identifier = identifier.Sanitize();
             XmlRoot = new XDocument(
                 new XElement("modpack",
                     new XElement("displayName", displayName),

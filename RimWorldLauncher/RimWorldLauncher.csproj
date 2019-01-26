@@ -63,16 +63,27 @@
     <Compile Include="DependencyObjectExtensions.cs" />
     <Compile Include="FileSystemInfoExtensions.cs" />
     <Compile Include="IEnumerableExtensions.cs" />
+    <Compile Include="Models\ActiveModsConfigReader.cs" />
     <Compile Include="Models\LauncherConfig.cs" />
     <Compile Include="Models\ModpacksReader.cs" />
     <Compile Include="Mixins\MixinXmlConfig.cs" />
-    <Compile Include="Views\Main\ModEdit\WinModpackEdit.xaml.cs">
+    <Compile Include="Models\Profile.cs" />
+    <Compile Include="Models\ProfilesReader.cs" />
+    <Compile Include="StringExtensions.cs" />
+    <Compile Include="Views\Main\Edit\WinProfileEdit.xaml.cs">
+      <DependentUpon>WinProfileEdit.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\Main\Edit\WinModpackEdit.xaml.cs">
       <DependentUpon>WinModpackEdit.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\Startup\WinStartup.xaml.cs">
       <DependentUpon>WinStartup.xaml</DependentUpon>
     </Compile>
-    <Page Include="Views\Main\ModEdit\WinModpackEdit.xaml">
+    <Page Include="Views\Main\Edit\WinProfileEdit.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\Main\Edit\WinModpackEdit.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

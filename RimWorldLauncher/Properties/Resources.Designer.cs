@@ -61,6 +61,15 @@ namespace RimWorldLauncher.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to ModsConfig.xml.
+        /// </summary>
+        internal static string ActiveModsConfigName {
+            get {
+                return ResourceManager.GetString("ActiveModsConfigName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Mods.
         /// </summary>
         internal static string InstalledModsFolderName {
@@ -75,6 +84,33 @@ namespace RimWorldLauncher.Properties {
         internal static string LauncherName {
             get {
                 return ResourceManager.GetString("LauncherName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Launcher_Modpacks.
+        /// </summary>
+        internal static string ModpacksFolderName {
+            get {
+                return ResourceManager.GetString("ModpacksFolderName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to config.xml.
+        /// </summary>
+        internal static string ProfileConfigName {
+            get {
+                return ResourceManager.GetString("ProfileConfigName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Launcher_Profiles.
+        /// </summary>
+        internal static string ProfilesFolderName {
+            get {
+                return ResourceManager.GetString("ProfilesFolderName", resourceCulture);
             }
         }
         

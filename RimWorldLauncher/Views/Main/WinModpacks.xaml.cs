@@ -15,7 +15,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using RimWorldLauncher;
 using RimWorldLauncher.Models;
-using RimWorldLauncher.Views.Main.ModEdit;
+using RimWorldLauncher.Views.Main.Edit;
 
 namespace RimWorldLauncher.Views.Main
 {
@@ -61,7 +61,7 @@ namespace RimWorldLauncher.Views.Main
 
         private void ModpacksList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var selectedModpack = LvModpacks.SelectedItem as Modpack;
+            var selectedModpack = (sender as ListView).SelectedItem as Modpack;
             if (selectedModpack != null)
             {
                 LvActivatedMods.ItemsSource = _currentModpack = selectedModpack;
@@ -104,8 +104,18 @@ namespace RimWorldLauncher.Views.Main
         private void BtnDelete_OnClick(object sender, RoutedEventArgs e)
         {
             var modpack = (sender as Button).DataContext as Modpack;
-            modpack.Delete();
-            App.Modpacks.Refresh();
+            if (
+                MessageBox.Show(
+                    $"Are you sure you want to delete \"{modpack.DisplayName}\"?\nMods are not going to be uninstalled.\nThis cannot be undone.",
+                    "Delete profile?",
+                    MessageBoxButton.YesNo,
+                    MessageBoxImage.Warning
+                ) == MessageBoxResult.Yes
+            )
+            {
+                modpack.Delete();
+                App.Modpacks.Refresh();
+            }
         }
 
         private void BtnCreate_OnClick(object sender, RoutedEventArgs e)
@@ -113,7 +123,6 @@ namespace RimWorldLauncher.Views.Main
             var editWindow = new WinModpackEdit();
             if (editWindow.ShowDialog() ?? false)
             {
-                App.Modpacks.List.Add(editWindow.Modpack);
                 App.Modpacks.Refresh();
             }
         }

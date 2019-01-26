@@ -21,12 +21,9 @@ namespace RimWorldLauncher.Models
 
         public ModpacksReader()
         {
-            var directory = new DirectoryInfo("modpacks");
-            if (!directory.Exists)
-            {
-                directory.Create();
-            }
-            Directory = directory;
+            var dataFolder = App.Config.ReadDataFolder();
+            Directory = dataFolder.GetDirectories().FirstOrDefault((dir) => dir.Name == Properties.Resources.ModpacksFolderName)
+                ?? dataFolder.CreateSubdirectory(Properties.Resources.ModpacksFolderName);
             Refresh();
         }
 

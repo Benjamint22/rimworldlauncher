@@ -1,0 +1,29 @@
+﻿<Window x:Class="RimWorldLauncher.Views.Main.Edit.WinProfileEdit"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:RimWorldLauncher.Views.Main.Edit"
+        mc:Ignorable="d"
+        Loaded="Window_Loaded"
+        Title="WinModEdit" Height="132" Width="256" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
+    <Grid Margin="8">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Label Content="Name:" Grid.Column="0" Grid.Row="0"/>
+        <TextBox Name="TxtName" Grid.Column="1" Grid.Row="0" Width="128" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+        <Label Content="Modpack:" Grid.Column="0" Grid.Row="1"/>
+        <ComboBox Name="CbModpack" ItemsSource="{Binding}" DisplayMemberPath="DisplayName" Grid.Column="1" Grid.Row="1" Width="128" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+        <UniformGrid Grid.ColumnSpan="2" Rows="1" Height="24" VerticalAlignment="Bottom" Grid.Column="0" Grid.Row="2">
+            <Button Content="Cancel" IsCancel="True" Margin="0,0,4,0" Click="Cancel_Click"/>
+            <Button Name="BtnSave" Content="Save" IsDefault="True" Margin="4,0,0,0" Click="Save_Click"/>
+        </UniformGrid>
+    </Grid>
+</Window>

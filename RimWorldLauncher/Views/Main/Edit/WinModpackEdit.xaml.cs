@@ -13,7 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace RimWorldLauncher.Views.Main.ModEdit
+namespace RimWorldLauncher.Views.Main.Edit
 {
     /// <summary>
     /// Interaction logic for WinModEdit.xaml
@@ -32,10 +32,12 @@ namespace RimWorldLauncher.Views.Main.ModEdit
             if (Modpack == null)
             {
                 BtnSave.Content = "Create";
+                Title = "Create modpack";
             }
             else
             {
                 TxtName.Text = Modpack.DisplayName;
+                Title = $"Editing {Modpack.DisplayName}";
             }
         }
 

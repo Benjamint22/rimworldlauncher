@@ -130,4 +130,16 @@
   <data name="InstalledModsFolderName" xml:space="preserve">
     <value>Mods</value>
   </data>
+  <data name="ProfileConfigName" xml:space="preserve">
+    <value>config.xml</value>
+  </data>
+  <data name="ProfilesFolderName" xml:space="preserve">
+    <value>Launcher_Profiles</value>
+  </data>
+  <data name="ActiveModsConfigName" xml:space="preserve">
+    <value>ModsConfig.xml</value>
+  </data>
+  <data name="ModpacksFolderName" xml:space="preserve">
+    <value>Launcher_Modpacks</value>
+  </data>
 </root>
