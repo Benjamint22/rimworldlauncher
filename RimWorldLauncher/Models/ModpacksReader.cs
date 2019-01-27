@@ -42,5 +42,14 @@ namespace RimWorldLauncher.Models
                 List.Add(new Modpack(file));
             }
         }
+
+        public void AddVanillaModpack()
+        {
+            if (!List.Any((modpack) => modpack.Identifier == "vanilla"))
+            {
+                new Modpack("Vanilla (default)", "vanilla");
+                Refresh();
+            }
+        }
     }
 }

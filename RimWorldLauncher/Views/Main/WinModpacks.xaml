@@ -100,7 +100,7 @@
                 KeyDown="LvActivatedMods_KeyDown"
                 AllowDrop="True"
                 SelectionMode="Extended" 
-                Grid.Row="2">
+                Grid.Row="2" IsEnabled="False">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <StackPanel>

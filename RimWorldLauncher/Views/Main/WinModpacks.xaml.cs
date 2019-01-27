@@ -36,12 +36,13 @@ namespace RimWorldLauncher.Views.Main
         private void RefreshModpacksList()
         {
             LvModpacks.ItemsSource = App.Modpacks.List;
-            LvModpacks.Items.Filter = (mod) => (mod as Modpack).Identifier != "vanilla";
+            LvModpacks.Items.Filter = (modpack) => (modpack as Modpack).Identifier != "vanilla";
         }
 
         private void RefreshInstalledMods()
         {
             LvInstalledMods.ItemsSource = App.Mods.Mods;
+            LvInstalledMods.Items.Filter = (mod) => (mod as ModInfo).Identifier != "Core";
         }
 
         private void SelectMod(ModInfo mod)
@@ -65,6 +66,11 @@ namespace RimWorldLauncher.Views.Main
             if (selectedModpack != null)
             {
                 LvActivatedMods.ItemsSource = _currentModpack = selectedModpack;
+                LvActivatedMods.IsEnabled = true;
+            }
+            else
+            {
+                LvActivatedMods.IsEnabled = false;
             }
         }
 
@@ -104,9 +110,15 @@ namespace RimWorldLauncher.Views.Main
         private void BtnDelete_OnClick(object sender, RoutedEventArgs e)
         {
             var modpack = (sender as Button).DataContext as Modpack;
+            var profiles = App.Profiles.List.Where((profile) => profile.Modpack == modpack);
+            var message = $"Are you sure you want to delete \"{modpack.DisplayName}\"?\nMods are not going to be uninstalled.\nThis cannot be undone.";
+            if (profiles.Count() > 0)
+            {
+                message += $"\n\nThis modpack is used by the following profile(s):\n" + string.Join("\n", profiles.Select((profile) => profile.DisplayName));
+            }
             if (
                 MessageBox.Show(
-                    $"Are you sure you want to delete \"{modpack.DisplayName}\"?\nMods are not going to be uninstalled.\nThis cannot be undone.",
+                    message,
                     "Delete profile?",
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Warning

@@ -23,7 +23,9 @@ namespace RimWorldLauncher.Models
         public IEnumerable<ModInfo> GetActiveMods()
         {
             return XmlRoot.Element("ModsConfigData").Element("activeMods").Elements().Select(
-                (modElement) => App.Mods.Mods.First((mod) => mod.Identifier == modElement.Value)
+                (modElement) => modElement.Value == "Core" ? null : App.Mods.Mods.First((mod) => mod.Identifier == modElement.Value)
+            ).Where(
+                (mod) => mod != null    
             );
         }
 
@@ -31,6 +33,7 @@ namespace RimWorldLauncher.Models
         {
             var activeModsElement = XmlRoot.Element("ModsConfigData").Element("activeMods");
             activeModsElement.RemoveNodes();
+            activeModsElement.Add(new XElement("li", "Core"));
             foreach (var mod in mods)
             {
                 activeModsElement.Add(new XElement("li", mod.Identifier));

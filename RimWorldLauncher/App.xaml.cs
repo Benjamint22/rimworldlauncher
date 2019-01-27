@@ -58,6 +58,7 @@ namespace RimWorldLauncher
         {
             Mods = new InstalledMods();
             Modpacks = new ModpacksReader();
+            Modpacks.AddVanillaModpack();
             ActiveModsConfig = new ActiveModsConfigReader();
             Profiles = new ProfilesReader();
             if (!Profiles.IsSymlinked())

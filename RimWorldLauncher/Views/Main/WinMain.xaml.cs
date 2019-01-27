@@ -51,8 +51,9 @@ namespace RimWorldLauncher.Views.Main
 
         private void BtnModpacks_OnClick(object sender, RoutedEventArgs e)
         {
-            App.Instance.SwitchMainWindow(new WinModpacks(), this);
-            Hide();
+            //App.Instance.SwitchMainWindow(new WinModpacks(), this);
+            //Hide();
+            (new WinModpacks()).ShowDialog();
         }
 
         private void BtnPlay_OnClick(object sender, RoutedEventArgs e)
