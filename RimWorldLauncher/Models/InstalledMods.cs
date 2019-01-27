@@ -20,7 +20,7 @@ namespace RimWorldLauncher.Models
 
         public void RefreshMods()
         {
-            Mods = ModsDirectory.GetDirectories().Select((modDirectory) => new ModInfo(modDirectory)).ToList();
+            Mods = ModsDirectory.GetDirectories().Where((modDirectory) => modDirectory.Name != "Core").Select((modDirectory) => new ModInfo(modDirectory)).ToList();
         }
     }
 }

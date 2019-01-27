@@ -89,7 +89,7 @@
                 <RowDefinition/>
             </Grid.RowDefinitions>
             <Label Style="{StaticResource Title}" Content="Activated"/>
-            <ListView 
+            <ListView
                 Name="LvActivatedMods" 
                 ItemsSource="{Binding}" 
                 SelectionChanged="LvActivatedMods_SelectionChanged"

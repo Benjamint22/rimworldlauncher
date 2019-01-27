@@ -26,7 +26,6 @@ namespace RimWorldLauncher.Views.Main
     {
         private Point? _dragStartPoint;
         private Modpack _currentModpack;
-        private ModInfo _currentMod;
 
         public WinModpacks()
         {
@@ -35,23 +34,25 @@ namespace RimWorldLauncher.Views.Main
 
         private void RefreshModpacksList()
         {
-            LvModpacks.ItemsSource = App.Modpacks.List;
-            LvModpacks.Items.Filter = (modpack) => (modpack as Modpack).Identifier != "vanilla";
+            var viewSource = new ListCollectionView(App.Modpacks.List);
+            viewSource.Filter += ViewSource_Filter;
+            LvModpacks.ItemsSource = viewSource;
+        }
+
+        private static bool ViewSource_Filter(object modpack)
+        {
+            return (modpack as Modpack)?.Identifier != "vanilla";
         }
 
         private void RefreshInstalledMods()
         {
             LvInstalledMods.ItemsSource = App.Mods.Mods;
-            LvInstalledMods.Items.Filter = (mod) => (mod as ModInfo).Identifier != "Core";
         }
 
         private void SelectMod(ModInfo mod)
         {
-            if (mod != null)
-            {
-                _currentMod = mod;
-                (FrMod.Content as PgMod).SetMod(mod);
-            }
+            if (mod == null) return;
+            (FrMod.Content as PgMod)?.SetMod(mod);
         }
 
         private void PgModpacks_OnLoaded(object sender, RoutedEventArgs e)
@@ -62,31 +63,31 @@ namespace RimWorldLauncher.Views.Main
 
         private void ModpacksList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            var selectedModpack = (sender as ListView).SelectedItem as Modpack;
-            if (selectedModpack != null)
+            if ((sender as ListView)?.SelectedItem is Modpack selectedModpack)
             {
                 LvActivatedMods.ItemsSource = _currentModpack = selectedModpack;
                 LvActivatedMods.IsEnabled = true;
             }
             else
             {
+                LvActivatedMods.ItemsSource = null;
                 LvActivatedMods.IsEnabled = false;
             }
         }
 
         private void LvInstalledMods_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SelectMod((sender as ListView).SelectedItem as ModInfo);
+            SelectMod((sender as ListView)?.SelectedItem as ModInfo);
         }
 
         private void LvActivatedMods_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            SelectMod((sender as ListView).SelectedItem as ModInfo);
+            SelectMod((sender as ListView)?.SelectedItem as ModInfo);
         }
 
         private void BtnEdit_OnClick(object sender, RoutedEventArgs e)
         {
-            var modpack = (sender as Button).DataContext as Modpack;
+            var modpack = (sender as Button)?.DataContext as Modpack;
             var editWindow = new WinModpackEdit
             {
                 Modpack = modpack
@@ -96,25 +97,23 @@ namespace RimWorldLauncher.Views.Main
 
         private void BtnClone_OnClick(object sender, RoutedEventArgs e)
         {
-            var modpackToClone = (sender as Button).DataContext as Modpack;
+            var modpackToClone = (sender as Button)?.DataContext as Modpack;
             var editWindow = new WinModpackEdit();
-            if (editWindow.ShowDialog() ?? false)
-            {
-                var newModpack = editWindow.Modpack;
-                newModpack.CopyTo(modpackToClone.Select(mod => mod).ToArray(), 0);
-                App.Modpacks.List.Add(editWindow.Modpack);
-                App.Modpacks.Refresh();
-            }
+            if (!(editWindow.ShowDialog() ?? false)) return;
+            var newModpack = editWindow.Modpack;
+            newModpack.CopyTo((modpackToClone ?? throw new InvalidOperationException()).Select(mod => mod).ToArray(), 0);
+            App.Modpacks.Refresh();
         }
 
         private void BtnDelete_OnClick(object sender, RoutedEventArgs e)
         {
-            var modpack = (sender as Button).DataContext as Modpack;
+            var modpack = (sender as Button)?.DataContext as Modpack;
             var profiles = App.Profiles.List.Where((profile) => profile.Modpack == modpack);
-            var message = $"Are you sure you want to delete \"{modpack.DisplayName}\"?\nMods are not going to be uninstalled.\nThis cannot be undone.";
-            if (profiles.Count() > 0)
+            var message = $"Are you sure you want to delete \"{modpack?.DisplayName}\"?\nMods are not going to be uninstalled.\nThis cannot be undone.";
+            var arrProfiles = profiles as Profile[] ?? profiles.ToArray();
+            if (arrProfiles.Any())
             {
-                message += $"\n\nThis modpack is used by the following profile(s):\n" + string.Join("\n", profiles.Select((profile) => profile.DisplayName));
+                message += $"\n\nThis modpack is used by the following profile(s):\n" + string.Join("\n", arrProfiles.Select((profile) => profile.DisplayName));
             }
             if (
                 MessageBox.Show(
