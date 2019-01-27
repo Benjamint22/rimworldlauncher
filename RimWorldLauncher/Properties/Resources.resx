@@ -142,4 +142,10 @@
   <data name="ModpacksFolderName" xml:space="preserve">
     <value>Launcher_Modpacks</value>
   </data>
+  <data name="DragModpackReorder" xml:space="preserve">
+    <value>RimworldMod_Reorder</value>
+  </data>
+  <data name="DragModpackActivate" xml:space="preserve">
+    <value>RimworldMod_Activate</value>
+  </data>
 </root>

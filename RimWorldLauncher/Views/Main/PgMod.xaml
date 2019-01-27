@@ -1,43 +1,44 @@
 ﻿<Page x:Class="RimWorldLauncher.Views.Main.PgMod"
       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
       xmlns:local="clr-namespace:RimWorldLauncher.Views.Main"
-      mc:Ignorable="d" 
+      mc:Ignorable="d"
       d:DesignHeight="450" d:DesignWidth="800"
       Background="#FF73756F"
       Title="PgMod">
 
     <Grid Name="Contents">
         <Grid.RowDefinitions>
-            <RowDefinition Height="2*"/>
-            <RowDefinition Height="36"/>
-            <RowDefinition Height="3*"/>
+            <RowDefinition Height="2*" />
+            <RowDefinition Height="36" />
+            <RowDefinition Height="3*" />
         </Grid.RowDefinitions>
-        <Image Name="ImgPreview" Source="/Images/DefaultPreview.png"/>
-        <Label Name="LblName" Content="Test title" FontSize="24" Foreground="#FFEAE3E3" Grid.Row="1"/>
+        <Image Name="ImgPreview" Source="/Images/DefaultPreview.png" />
+        <Label Name="LblName" Content="Test title" FontSize="24" Foreground="#FFEAE3E3" Grid.Row="1" />
         <Grid Grid.Row="2">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
             </Grid.RowDefinitions>
             <StackPanel Orientation="Horizontal" Grid.Row="0">
                 <StackPanel>
-                    <Label Content="Author:"/>
-                    <Label Content="Mod version:"/>
-                    <Label Content="Target game version:"></Label>
+                    <Label Content="Author:" />
+                    <Label Content="Mod version:" />
+                    <Label Content="Target game version:" />
                     <Label Content="Url:" />
-                    <Label Content="Description:"/>
+                    <Label Content="Description:" />
                 </StackPanel>
                 <StackPanel>
-                    <Label Name="LblAuthor" Content="Unknown"/>
-                    <Label Name="LblVersion" Content="0.0.0"/>
-                    <Label Name="LblGameVersion"  Content="A19"/>
-                    <Label Name="LblUrl" Content="https://sometestwebsite.dev/thisurlistoolong/abc.html"/>
+                    <Label Name="LblAuthor" Content="Unknown" />
+                    <Label Name="LblVersion" Content="0.0.0" />
+                    <Label Name="LblGameVersion" Content="A19" />
+                    <Label Name="LblUrl" Content="https://sometestwebsite.dev/thisurlistoolong/abc.html" />
                 </StackPanel>
             </StackPanel>
-            <TextBox Name="LblDescription" IsReadOnly="True" VerticalScrollBarVisibility="Visible" TextWrapping="Wrap" Grid.Row="1" Background="Transparent" />
+            <TextBox Name="LblDescription" IsReadOnly="True" VerticalScrollBarVisibility="Visible" TextWrapping="Wrap"
+                     Grid.Row="1" Background="Transparent" />
         </Grid>
     </Grid>
 </Page>

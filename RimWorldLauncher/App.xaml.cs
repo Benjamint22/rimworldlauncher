@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Data;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using RimWorldLauncher.Models;
 using RimWorldLauncher.Views.Main;
@@ -13,10 +9,17 @@ using RimWorldLauncher.Views.Startup;
 namespace RimWorldLauncher
 {
     /// <summary>
-    /// Interaction logic for App.xaml
+    ///     Interaction logic for App.xaml
     /// </summary>
     public partial class App : Application
     {
+        public App()
+        {
+            Instance = this;
+            Config = new LauncherConfig();
+            ShutdownMode = ShutdownMode.OnExplicitShutdown;
+        }
+
         public static LauncherConfig Config { get; private set; }
         public static InstalledMods Mods { get; private set; }
         public static ModpacksReader Modpacks { get; private set; }
@@ -29,28 +32,14 @@ namespace RimWorldLauncher
             MessageBox.Show(message, caption, MessageBoxButton.OK, MessageBoxImage.Error);
         }
 
-        public App()
-        {
-            Instance = this;
-            Config = new LauncherConfig();
-            ShutdownMode = ShutdownMode.OnExplicitShutdown;
-        }
-
         public void SwitchMainWindow(Window newWindow, Window parentWindow = null)
         {
-            if (MainWindow != null)
-            {
-                MainWindow.Closed -= MainWindow_Closed;
-            }
+            if (MainWindow != null) MainWindow.Closed -= MainWindow_Closed;
             MainWindow = newWindow;
             if (parentWindow == null)
-            {
                 MainWindow.Closed += MainWindow_Closed;
-            }
             else
-            {
                 MainWindow.Closed += (sender, e) => SwitchMainWindow(parentWindow);
-            }
             MainWindow.Show();
         }
 
@@ -77,8 +66,10 @@ namespace RimWorldLauncher
                     Modpacks.Refresh();
                     var profile = new Profile("Old profile", oldModpack, "old");
                     profile.SavesFolder?.Delete();
-                    App.Config.ReadDataFolder().GetDirectories().First((directory) => directory.Name == RimWorldLauncher.Properties.Resources.SavesFolderName)
-                        .MoveTo(Path.Combine(profile.ProfileFolder.FullName, RimWorldLauncher.Properties.Resources.SavesFolderName));
+                    Config.ReadDataFolder().GetDirectories().First(directory =>
+                            directory.Name == RimWorldLauncher.Properties.Resources.SavesFolderName)
+                        .MoveTo(Path.Combine(profile.ProfileFolder.FullName,
+                            RimWorldLauncher.Properties.Resources.SavesFolderName));
                 }
                 else
                 {
@@ -86,6 +77,7 @@ namespace RimWorldLauncher
                     return;
                 }
             }
+
             SwitchMainWindow(new WinMain());
         }
 
@@ -98,10 +90,7 @@ namespace RimWorldLauncher
             else
             {
                 MainWindow = new WinStartup();
-                if (MainWindow.ShowDialog() ?? false)
-                {
-                    OpenMainWindow();
-                }
+                if (MainWindow.ShowDialog() ?? false) OpenMainWindow();
             }
         }
 

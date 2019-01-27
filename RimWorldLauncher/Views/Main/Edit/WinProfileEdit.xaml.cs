@@ -1,31 +1,20 @@
-﻿using RimWorldLauncher.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
+using RimWorldLauncher.Models;
 
 namespace RimWorldLauncher.Views.Main.Edit
 {
     /// <summary>
-    /// Interaction logic for WinModEdit.xaml
+    ///     Interaction logic for WinModEdit.xaml
     /// </summary>
     public partial class WinProfileEdit : Window
     {
-        public Profile Profile { get; set; }
-
         public WinProfileEdit()
         {
             InitializeComponent();
         }
+
+        public Profile Profile { get; set; }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
@@ -34,7 +23,7 @@ namespace RimWorldLauncher.Views.Main.Edit
             {
                 BtnSave.Content = "Create";
                 Title = "Create profile";
-                CbModpack.SelectedItem = App.Modpacks.List.FirstOrDefault((modpack) => modpack.Identifier == "vanilla");
+                CbModpack.SelectedItem = App.Modpacks.List.FirstOrDefault(modpack => modpack.Identifier == "vanilla");
             }
             else
             {
@@ -51,6 +40,7 @@ namespace RimWorldLauncher.Views.Main.Edit
                 App.ShowError("\"Name\" cannot be empty.");
                 return;
             }
+
             if (Profile == null)
             {
                 Profile = new Profile(

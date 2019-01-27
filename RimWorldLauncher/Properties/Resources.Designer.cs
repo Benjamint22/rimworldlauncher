@@ -19,7 +19,7 @@ namespace RimWorldLauncher.Properties {
     // class via a tool like ResGen or Visual Studio.
     // To add or remove a member, edit your .ResX file then rerun ResGen
     // with the /str option, or rebuild your VS project.
-    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "15.0.0.0")]
+    [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Resources.Tools.StronglyTypedResourceBuilder", "4.0.0.0")]
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
     [global::System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     internal class Resources {
@@ -66,6 +66,24 @@ namespace RimWorldLauncher.Properties {
         internal static string ActiveModsConfigName {
             get {
                 return ResourceManager.GetString("ActiveModsConfigName", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RimworldMod_Activate.
+        /// </summary>
+        internal static string DragModpackActivate {
+            get {
+                return ResourceManager.GetString("DragModpackActivate", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to RimworldMod_Reorder.
+        /// </summary>
+        internal static string DragModpackReorder {
+            get {
+                return ResourceManager.GetString("DragModpackReorder", resourceCulture);
             }
         }
         

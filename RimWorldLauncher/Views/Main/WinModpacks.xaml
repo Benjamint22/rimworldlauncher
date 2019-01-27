@@ -1,44 +1,48 @@
 ﻿<Window x:Class="RimWorldLauncher.Views.Main.WinModpacks"
-      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
-      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:dd="urn:gong-wpf-dragdrop"
-      xmlns:local="clr-namespace:RimWorldLauncher.Views.Main"
-      xmlns:models="clr-namespace:RimWorldLauncher.Models"
-      mc:Ignorable="d" 
-      Loaded="PgModpacks_OnLoaded"
-      Title="Modpacks" Width="1280" Height="600" WindowStartupLocation="CenterScreen">
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:dd="urn:gong-wpf-dragdrop"
+        xmlns:local="clr-namespace:RimWorldLauncher.Views.Main"
+        xmlns:models="clr-namespace:RimWorldLauncher.Models"
+        mc:Ignorable="d"
+        Loaded="PgModpacks_OnLoaded"
+        Title="Modpacks" Width="1280" Height="600" WindowStartupLocation="CenterScreen">
 
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="2*"/>
-            <ColumnDefinition Width="5"/>
-            <ColumnDefinition Width="2*"/>
-            <ColumnDefinition Width="5"/>
-            <ColumnDefinition Width="2*"/>
-            <ColumnDefinition Width="5"/>
-            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="2*" />
+            <ColumnDefinition Width="5" />
+            <ColumnDefinition Width="3*" />
         </Grid.ColumnDefinitions>
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition/>
-                <RowDefinition Height="32"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+                <RowDefinition Height="32" />
             </Grid.RowDefinitions>
-            <Label Style="{StaticResource Title}" Content="Modpacks"/>
-            <ListView Name="LvModpacks" ItemsSource="{Binding}" SelectionMode="Single" SelectionChanged="ModpacksList_OnSelectionChanged" HorizontalContentAlignment="Stretch" Grid.Row="1">
+            <Label Style="{StaticResource Title}" Content="Modpacks" />
+            <ListView Name="LvModpacks" ItemsSource="{Binding}" SelectionMode="Single"
+                      SelectionChanged="ModpacksList_OnSelectionChanged" HorizontalContentAlignment="Stretch"
+                      Grid.Row="1">
                 <ListView.ItemTemplate>
                     <DataTemplate DataType="{x:Type models:Modpack}">
                         <DockPanel>
                             <StackPanel DockPanel.Dock="Left" HorizontalAlignment="Left">
-                                <Label Content="{Binding DisplayName}" HorizontalAlignment="Left" Margin="0" FontSize="14"/>
-                                <Label Content="{Binding Identifier}" HorizontalAlignment="Left" Margin="0" FontSize="10" Foreground="DarkGray"/>
+                                <Label Content="{Binding DisplayName}" HorizontalAlignment="Left" Margin="0"
+                                       FontSize="14" />
+                                <Label Content="{Binding Identifier}" HorizontalAlignment="Left" Margin="0"
+                                       FontSize="10" Foreground="DarkGray" />
                             </StackPanel>
                             <UniformGrid Rows="3" DockPanel.Dock="Right" HorizontalAlignment="Right">
-                                <Button Content="Edit" Click="BtnEdit_OnClick"/>
-                                <Button Content="Clone" Click="BtnClone_OnClick"/>
-                                <Button Content="Delete" Click="BtnDelete_OnClick"/>
+                                <Button Content="Edit" Click="BtnEdit_OnClick" />
+                                <Button Content="Clone" Click="BtnClone_OnClick" />
+                                <Button Content="Delete" Click="BtnDelete_OnClick" />
                             </UniformGrid>
                         </DockPanel>
                     </DataTemplate>
@@ -46,23 +50,23 @@
             </ListView>
             <Grid Grid.Row="2">
                 <Grid.RowDefinitions>
-                    <RowDefinition/>
+                    <RowDefinition />
                 </Grid.RowDefinitions>
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition/>
+                    <ColumnDefinition />
                 </Grid.ColumnDefinitions>
-                <Button Content="Create" Click="BtnCreate_OnClick"/>
+                <Button Content="Create" Click="BtnCreate_OnClick" />
             </Grid>
         </Grid>
-        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch"></GridSplitter>
+        <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" />
         <Grid Grid.Column="2">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
             </Grid.RowDefinitions>
-            <Label Style="{StaticResource Title}" Content="Installed"/>
-            <ListView 
-                Name="LvInstalledMods" 
+            <Label Style="{StaticResource Title}" Content="Installed" />
+            <ListView
+                Name="LvInstalledMods"
                 ItemsSource="{Binding}"
                 SelectionChanged="LvInstalledMods_SelectionChanged"
                 PreviewMouseLeftButtonDown="LvInstalledMods_PreviewMouseLeftButtonDown"
@@ -75,23 +79,24 @@
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <StackPanel>
-                            <Label Content="{Binding DisplayName}" HorizontalAlignment="Left" Margin="0" FontSize="14"/>
-                            <Label Content="{Binding TargetGameVersion}" HorizontalAlignment="Left" Margin="0" FontSize="10" Foreground="DarkGray"/>
+                            <Label Content="{Binding DisplayName}" HorizontalAlignment="Left" Margin="0" FontSize="14" />
+                            <Label Content="{Binding TargetGameVersion}" HorizontalAlignment="Left" Margin="0"
+                                   FontSize="10" Foreground="DarkGray" />
                         </StackPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
         </Grid>
-        <GridSplitter Grid.Column="3" HorizontalAlignment="Stretch"></GridSplitter>
+        <GridSplitter Grid.Column="3" HorizontalAlignment="Stretch" />
         <Grid Grid.Column="4">
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
             </Grid.RowDefinitions>
-            <Label Style="{StaticResource Title}" Content="Activated"/>
+            <Label Style="{StaticResource Title}" Content="Activated" />
             <ListView
-                Name="LvActivatedMods" 
-                ItemsSource="{Binding}" 
+                Name="LvActivatedMods"
+                ItemsSource="{Binding}"
                 SelectionChanged="LvActivatedMods_SelectionChanged"
                 PreviewMouseLeftButtonDown="LvActivatedMods_PreviewMouseLeftButtonDown"
                 MouseMove="LvActivatedMods_MouseMove"
@@ -99,20 +104,20 @@
                 Drop="LvActivatedMods_Drop"
                 KeyDown="LvActivatedMods_KeyDown"
                 AllowDrop="True"
-                SelectionMode="Extended" 
+                SelectionMode="Extended"
                 Grid.Row="2" IsEnabled="False">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <StackPanel>
-                            <Label Content="{Binding DisplayName}" HorizontalAlignment="Left" Margin="0" FontSize="14"/>
-                            <Label Content="{Binding TargetGameVersion}" HorizontalAlignment="Left" Margin="0" FontSize="10" Foreground="DarkGray"/>
+                            <Label Content="{Binding DisplayName}" HorizontalAlignment="Left" Margin="0" FontSize="14" />
+                            <Label Content="{Binding TargetGameVersion}" HorizontalAlignment="Left" Margin="0"
+                                   FontSize="10" Foreground="DarkGray" />
                         </StackPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
         </Grid>
-        <GridSplitter Grid.Column="5" HorizontalAlignment="Stretch"></GridSplitter>
-        <Frame Grid.Column="6" Source="/RimWorldLauncher;component/Views/Main/PgMod.xaml" Name="FrMod">
-        </Frame>
+        <GridSplitter Grid.Column="5" HorizontalAlignment="Stretch" />
+        <Frame Grid.Column="6" Source="/RimWorldLauncher;component/Views/Main/PgMod.xaml" Name="FrMod" />
     </Grid>
 </Window>

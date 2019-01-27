@@ -1,31 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Linq;
-using Microsoft.Win32;
 
 namespace RimWorldLauncher.Models
 {
-    public class LauncherConfig : MixinXmlConfig
+    public class LauncherConfig : IMixinXmlConfig
     {
-        public FileInfo Source { get; set; }
-        public XDocument XmlRoot { get; set; }
-
         public LauncherConfig()
         {
-            FileInfo configFile = new FileInfo("launcher.xml");
+            var configFile = new FileInfo("launcher.xml");
             if (configFile.Exists)
-            {
                 LoadConfig(configFile);
-            }
             else
-            {
                 InitializeConfig(configFile);
-            }
         }
+
+        public FileInfo Source { get; set; }
+        public XDocument XmlRoot { get; set; }
 
         public DirectoryInfo ReadGameFolder()
         {
@@ -35,10 +26,7 @@ namespace RimWorldLauncher.Models
         public bool SetGameFolder(string folder)
         {
             var info = CastPath(folder);
-            if (info == null)
-            {
-                return false;
-            }
+            if (info == null) return false;
             XmlRoot.Element("configuration").Element("gameFolder").Value = info.FullName;
             return true;
         }
@@ -51,10 +39,7 @@ namespace RimWorldLauncher.Models
         public bool SetDataFolder(string folder)
         {
             var info = CastPath(folder);
-            if (info == null)
-            {
-                return false;
-            }
+            if (info == null) return false;
             XmlRoot.Element("configuration").Element("dataFolder").Value = info.FullName;
             return true;
         }
@@ -62,10 +47,7 @@ namespace RimWorldLauncher.Models
         private DirectoryInfo CastPath(string path)
         {
             path = Environment.ExpandEnvironmentVariables(path);
-            if (string.IsNullOrEmpty(path))
-            {
-                return null;
-            }
+            if (string.IsNullOrEmpty(path)) return null;
             DirectoryInfo folder;
             try
             {
@@ -89,8 +71,8 @@ namespace RimWorldLauncher.Models
         {
             Source = config;
             XmlRoot = new XDocument(
-                new XElement("configuration", 
-                    new XElement("gameFolder", ""), 
+                new XElement("configuration",
+                    new XElement("gameFolder", ""),
                     new XElement("dataFolder", "")
                 )
             );

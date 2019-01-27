@@ -9,21 +9,23 @@
         Title="WinModEdit" Height="132" Width="256" WindowStartupLocation="CenterScreen" ResizeMode="NoResize">
     <Grid Margin="8">
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="Auto"/>
-            <ColumnDefinition/>
+            <ColumnDefinition Width="Auto" />
+            <ColumnDefinition />
         </Grid.ColumnDefinitions>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition/>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition />
         </Grid.RowDefinitions>
-        <Label Content="Name:" Grid.Column="0" Grid.Row="0"/>
-        <TextBox Name="TxtName" Grid.Column="1" Grid.Row="0" Width="128" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-        <Label Content="Modpack:" Grid.Column="0" Grid.Row="1"/>
-        <ComboBox Name="CbModpack" ItemsSource="{Binding}" DisplayMemberPath="DisplayName" Grid.Column="1" Grid.Row="1" Width="128" VerticalAlignment="Center" HorizontalAlignment="Right"/>
+        <Label Content="Name:" Grid.Column="0" Grid.Row="0" />
+        <TextBox Name="TxtName" Grid.Column="1" Grid.Row="0" Width="128" VerticalAlignment="Center"
+                 HorizontalAlignment="Right" />
+        <Label Content="Modpack:" Grid.Column="0" Grid.Row="1" />
+        <ComboBox Name="CbModpack" ItemsSource="{Binding}" DisplayMemberPath="DisplayName" Grid.Column="1" Grid.Row="1"
+                  Width="128" VerticalAlignment="Center" HorizontalAlignment="Right" />
         <UniformGrid Grid.ColumnSpan="2" Rows="1" Height="24" VerticalAlignment="Bottom" Grid.Column="0" Grid.Row="2">
-            <Button Content="Cancel" IsCancel="True" Margin="0,0,4,0" Click="Cancel_Click"/>
-            <Button Name="BtnSave" Content="Save" IsDefault="True" Margin="4,0,0,0" Click="Save_Click"/>
+            <Button Content="Cancel" IsCancel="True" Margin="0,0,4,0" Click="Cancel_Click" />
+            <Button Name="BtnSave" Content="Save" IsDefault="True" Margin="4,0,0,0" Click="Save_Click" />
         </UniformGrid>
     </Grid>
 </Window>

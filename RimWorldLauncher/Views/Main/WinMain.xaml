@@ -9,48 +9,50 @@
         Title="MainWindow" Width="800" Height="600" WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="1*"/>
+            <ColumnDefinition Width="1*" />
         </Grid.ColumnDefinitions>
         <Grid>
             <Grid.RowDefinitions>
-                <RowDefinition Height="Auto"/>
-                <RowDefinition/>
-                <RowDefinition Height="32"/>
+                <RowDefinition Height="Auto" />
+                <RowDefinition />
+                <RowDefinition Height="32" />
             </Grid.RowDefinitions>
             <Menu>
                 <MenuItem Header="File">
-                    <MenuItem Header="Settings"/>
+                    <MenuItem Header="Settings" />
                 </MenuItem>
                 <MenuItem Header="About">
-                    <MenuItem Header="About RimWorld Launcher"/>
+                    <MenuItem Header="About RimWorld Launcher" />
                 </MenuItem>
             </Menu>
-            <ListView 
-                Name="LvProfiles" 
-                ItemsSource="{Binding}" 
-                SelectionMode="Single" 
-                SelectionChanged="LvProfiles_SelectionChanged" 
+            <ListView
+                Name="LvProfiles"
+                ItemsSource="{Binding}"
+                SelectionMode="Single"
+                SelectionChanged="LvProfiles_SelectionChanged"
                 HorizontalContentAlignment="Center"
                 Grid.Row="1">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <DockPanel Width="{Binding ElementName=LvProfiles,Path=ActualWidth}" MaxWidth="256">
                             <StackPanel DockPanel.Dock="Left" HorizontalAlignment="Left">
-                                <Label Content="{Binding DisplayName}" HorizontalAlignment="Left" Margin="0" FontSize="14"/>
-                                <Label Content="{Binding Modpack.DisplayName}" HorizontalAlignment="Left" Margin="0" FontSize="10" Foreground="DarkGray"/>
+                                <Label Content="{Binding DisplayName}" HorizontalAlignment="Left" Margin="0"
+                                       FontSize="14" />
+                                <Label Content="{Binding Modpack.DisplayName}" HorizontalAlignment="Left" Margin="0"
+                                       FontSize="10" Foreground="DarkGray" />
                             </StackPanel>
                             <UniformGrid Rows="2" DockPanel.Dock="Right" HorizontalAlignment="Right">
-                                <Button Content="Edit" Click="BtnEdit_OnClick"/>
-                                <Button Content="Delete" Click="BtnDelete_OnClick"/>
+                                <Button Content="Edit" Click="BtnEdit_OnClick" />
+                                <Button Content="Delete" Click="BtnDelete_OnClick" />
                             </UniformGrid>
                         </DockPanel>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
             <UniformGrid Columns="3" Grid.Row="2">
-                <Button Content="Create" Click="BtnCreate_OnClick"/>
-                <Button Content="Edit modpacks" Click="BtnModpacks_OnClick"/>
-                <Button Name="BtnPlay" Content="Play" Click="BtnPlay_OnClick" IsEnabled="False" IsDefault="True"/>
+                <Button Content="Create" Click="BtnCreate_OnClick" />
+                <Button Content="Edit modpacks" Click="BtnModpacks_OnClick" />
+                <Button Name="BtnPlay" Content="Play" Click="BtnPlay_OnClick" IsEnabled="False" IsDefault="True" />
             </UniformGrid>
         </Grid>
     </Grid>

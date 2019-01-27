@@ -1,11 +1,10 @@
-﻿using Microsoft.Win32.SafeHandles;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using System.Threading.Tasks;
+using Microsoft.Win32.SafeHandles;
 
 namespace RimWorldLauncher
 {
@@ -14,12 +13,12 @@ namespace RimWorldLauncher
         /// <summary>
         ///     Command to set the reparse point data block.
         /// </summary>
-        private const int FSCTL_SET_REPARSE_POINT = 0x000900A4;
+        private const int FsctlSetReparsePoint = 0x000900A4;
 
         /// <summary>
         ///     Reparse point tag used to identify mount points and junction points.
         /// </summary>
-        private const uint IO_REPARSE_TAG_MOUNT_POINT = 0xA0000003;
+        private const uint IoReparseTagMountPoint = 0xA0000003;
 
         /// <summary>
         ///     This prefix indicates to NTFS that the path is to be treated as a non-interpreted
@@ -27,10 +26,13 @@ namespace RimWorldLauncher
         /// </summary>
         private const string NonInterpretedPathPrefix = @"\??\";
 
+        private static readonly Dictionary<string, FileSystemWatcher> _fileWatchers =
+            new Dictionary<string, FileSystemWatcher>();
+
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern bool DeviceIoControl(IntPtr hDevice, uint dwIoControlCode,
-            IntPtr InBuffer, int nInBufferSize,
-            IntPtr OutBuffer, int nOutBufferSize,
+            IntPtr inBuffer, int nInBufferSize,
+            IntPtr outBuffer, int nOutBufferSize,
             out int pBytesReturned, IntPtr lpOverlapped);
 
         [DllImport("kernel32.dll", SetLastError = true)]
@@ -43,75 +45,73 @@ namespace RimWorldLauncher
             EFileAttributes dwFlagsAndAttributes,
             IntPtr hTemplateFile);
 
-        private static Dictionary<string, FileSystemWatcher> _fileWatchers = new Dictionary<string, FileSystemWatcher>();
-
         /// <summary>
-        /// Starts watching <paramref name="file"/> for change in its content.
+        ///     Starts watching <paramref name="file" /> for change in its content.
         /// </summary>
         /// <param name="file">The file to watch.</param>
-        /// <param name="onChanged">The event to run when <paramref name="file"/> is changed.</param>
-        /// <returns>A FileSystemWatcher that can be used to control the execution of <paramref name="onChanged"/>.</returns>
+        /// <param name="onChanged">The event to run when <paramref name="file" /> is changed.</param>
+        /// <returns>A FileSystemWatcher that can be used to control the execution of <paramref name="onChanged" />.</returns>
         public static FileSystemWatcher Watch(this FileInfo file, FileSystemEventHandler onChanged)
         {
             FileSystemWatcher watcher;
             if (_fileWatchers.ContainsKey(file.FullName))
-            {
                 watcher = file.GetWatcher();
-            }
             else
-            {
-                _fileWatchers[file.FullName] = watcher = new FileSystemWatcher()
+                _fileWatchers[file.FullName] = watcher = new FileSystemWatcher
                 {
                     Path = file.DirectoryName,
                     Filter = file.Name,
                     NotifyFilter = NotifyFilters.LastWrite,
                     EnableRaisingEvents = true
                 };
-            }
             watcher.Changed += onChanged;
             return watcher;
         }
 
         /// <summary>
-        /// Obtains the FileSystemWatcher of <paramref name="file"/> or null.
+        ///     Obtains the FileSystemWatcher of <paramref name="file" /> or null.
         /// </summary>
         /// <param name="file">The file to obtain the watcher for.</param>
-        /// <returns>The watcher of <paramref name="file"/> or null.</returns>
+        /// <returns>The watcher of <paramref name="file" /> or null.</returns>
         public static FileSystemWatcher GetWatcher(this FileInfo file)
         {
             return _fileWatchers.ContainsKey(file.FullName) ? _fileWatchers[file.FullName] : null;
         }
 
         /// <summary>
-        /// Checks if <paramref name="info"/> is a symbolic link or a directory junction.
+        ///     Checks if <paramref name="info" /> is a symbolic link or a directory junction.
         /// </summary>
         /// <param name="info">The file or directory to check.</param>
-        /// <returns>true if<paramref name="info"/> is a symbolic link or a directory junction.</returns>
+        /// <returns>true if<paramref name="info" /> is a symbolic link or a directory junction.</returns>
         public static bool IsSymlink(this FileSystemInfo info)
         {
             return info.Attributes.HasFlag(FileAttributes.ReparsePoint);
         }
 
         /// <summary>
-        /// Creates a directory junction inside <paramref name="parent"/> with the name <paramref name="junctionPointName"/>, which leads to <paramref name="targetDir"/>.
+        ///     Creates a directory junction inside <paramref name="parent" /> with the name <paramref name="junctionPointName" />,
+        ///     which leads to <paramref name="targetDir" />.
         /// </summary>
         /// <param name="parent">The parent folder of the new junction.</param>
         /// <param name="junctionPointName">The name of the junction.</param>
         /// <param name="targetDir">The directory that the junction should lead to.</param>
         /// <param name="overwrite">Whether or not to overwrite the junction if it already exists.</param>
         /// <returns></returns>
-        public static DirectoryInfo CreateJunction(this DirectoryInfo parent, string junctionPointName, DirectoryInfo targetDir, bool overwrite)
+        public static DirectoryInfo CreateJunction(this DirectoryInfo parent, string junctionPointName,
+            DirectoryInfo targetDir, bool overwrite)
         {
             if (!targetDir.Exists)
                 throw new IOException("Target path does not exist or is not a directory.");
 
-            DirectoryInfo junctionPoint = parent.EnumerateDirectories().FirstOrDefault((directory) => directory.Name.ToLower() == junctionPointName.ToLower());
+            var junctionPoint = parent.EnumerateDirectories()
+                .FirstOrDefault(directory => directory.Name.ToLower() == junctionPointName.ToLower());
             if (junctionPoint != null)
             {
                 if (!overwrite)
                     throw new IOException("Directory already exists.");
                 if (!junctionPoint.IsSymlink())
-                    throw new IOException($"Cannot overwrite the {junctionPoint.FullName} as it is not a directory junction. Only a directory junction can be overwritten.");
+                    throw new IOException(
+                        $"Cannot overwrite the {junctionPoint.FullName} as it is not a directory junction. Only a directory junction can be overwritten.");
             }
             else
             {
@@ -123,13 +123,13 @@ namespace RimWorldLauncher
                 var targetDirBytes = Encoding.Unicode.GetBytes(NonInterpretedPathPrefix + targetDir.FullName);
 
                 var reparseDataBuffer =
-                    new REPARSE_DATA_BUFFER
+                    new ReparseDataBuffer
                     {
-                        ReparseTag = IO_REPARSE_TAG_MOUNT_POINT,
-                        ReparseDataLength = (ushort)(targetDirBytes.Length + 12),
+                        ReparseTag = IoReparseTagMountPoint,
+                        ReparseDataLength = (ushort) (targetDirBytes.Length + 12),
                         SubstituteNameOffset = 0,
-                        SubstituteNameLength = (ushort)targetDirBytes.Length,
-                        PrintNameOffset = (ushort)(targetDirBytes.Length + 2),
+                        SubstituteNameLength = (ushort) targetDirBytes.Length,
+                        PrintNameOffset = (ushort) (targetDirBytes.Length + 2),
                         PrintNameLength = 0,
                         PathBuffer = new byte[0x3ff0]
                     };
@@ -144,7 +144,7 @@ namespace RimWorldLauncher
                     Marshal.StructureToPtr(reparseDataBuffer, inBuffer, false);
 
                     int bytesReturned;
-                    var result = DeviceIoControl(handle.DangerousGetHandle(), FSCTL_SET_REPARSE_POINT,
+                    var result = DeviceIoControl(handle.DangerousGetHandle(), FsctlSetReparsePoint,
                         inBuffer, targetDirBytes.Length + 20, IntPtr.Zero, 0, out bytesReturned, IntPtr.Zero);
 
                     if (!result)
@@ -216,7 +216,7 @@ namespace RimWorldLauncher
             Offline = 0x00001000,
             NotContentIndexed = 0x00002000,
             Encrypted = 0x00004000,
-            Write_Through = 0x80000000,
+            WriteThrough = 0x80000000,
             Overlapped = 0x40000000,
             NoBuffering = 0x20000000,
             RandomAccess = 0x10000000,
@@ -230,7 +230,7 @@ namespace RimWorldLauncher
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        private struct REPARSE_DATA_BUFFER
+        private struct ReparseDataBuffer
         {
             /// <summary>
             ///     Reparse point tag. Must be a Microsoft reparse point tag.
@@ -247,7 +247,7 @@ namespace RimWorldLauncher
             /// <summary>
             ///     Reserved; do not use.
             /// </summary>
-            public ushort Reserved;
+            public readonly ushort Reserved;
 
             /// <summary>
             ///     Offset, in bytes, of the substitute name string in the PathBuffer array.
@@ -275,7 +275,8 @@ namespace RimWorldLauncher
             ///     A buffer containing the unicode-encoded path string. The path string contains
             ///     the substitute name string and print name string.
             /// </summary>
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x3FF0)] public byte[] PathBuffer;
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x3FF0)]
+            public byte[] PathBuffer;
         }
     }
 }

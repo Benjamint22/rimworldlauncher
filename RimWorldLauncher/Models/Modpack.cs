@@ -1,64 +1,17 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading.Tasks;
+using System.Windows;
 using System.Xml.Linq;
 
 namespace RimWorldLauncher.Models
 {
-    public partial class Modpack : IList<ModInfo>, MixinXmlConfig, INotifyCollectionChanged, INotifyPropertyChanged
+    public class Modpack : IList<ModInfo>, IMixinXmlConfig, INotifyCollectionChanged, INotifyPropertyChanged
     {
-        public event NotifyCollectionChangedEventHandler CollectionChanged;
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        public string DisplayName
-        {
-            get => XmlRoot.Element("modpack").Element("displayName").Value;
-            set
-            {
-                XmlRoot.Element("modpack").Element("displayName").Value = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DisplayName"));
-                this.Save();
-            }
-        }
-
-        public string Identifier
-        {
-            get => Source.Name.EndsWith(".xml") ? Source.Name.Remove(Source.Name.Length - 4) : Source.Name;
-            set
-            {
-                var desiredName = $"{value.Sanitize()}.xml";
-                if (App.Modpacks.Directory.EnumerateFiles().Any((file) => file.Name != Source.Name && file.Name.ToLower() == desiredName.ToLower()))
-                {
-                    throw new ArgumentException("The identifier must be unique.");
-                }
-                string newDestination = Path.Combine(App.Modpacks.Directory.FullName, desiredName);
-                Source.MoveTo(newDestination);
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Identifier"));
-            }
-        }
-
-        public FileInfo Source { get; set; }
-        public XDocument XmlRoot { get; set; }
-
-        public int Count => XmlRoot.Element("modpack").Element("mods").Elements().Count();
-
-        public bool IsReadOnly => false;
-
-        public ModInfo this[int index]
-        {
-            get => App.Mods.Mods.First((mod) => mod.Identifier == XmlRoot.Element("modpack").Element("mods").Elements().ElementAt(index).Value);
-            set => XmlRoot.Element("modpack").Element("mods").Elements().ElementAt(index).Value = value.Identifier;
-        }
-
         public Modpack(string displayName, string identifier)
         {
             identifier = identifier.Sanitize();
@@ -80,27 +33,51 @@ namespace RimWorldLauncher.Models
             this.Load();
         }
 
-        private void Source_Changed(object sender, FileSystemEventArgs e)
+        public string DisplayName
         {
-            App.Current.Dispatcher.Invoke((Action)delegate {
-                this.Load();
-                CollectionChanged?.Invoke(this, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
-            });
+            get => XmlRoot.Element("modpack").Element("displayName").Value;
+            set
+            {
+                XmlRoot.Element("modpack").Element("displayName").Value = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("DisplayName"));
+                this.Save();
+            }
         }
 
-        public void Delete()
+        public string Identifier
         {
-            Source.Delete();
+            get => Source.Name.EndsWith(".xml") ? Source.Name.Remove(Source.Name.Length - 4) : Source.Name;
+            set
+            {
+                var desiredName = $"{value.Sanitize()}.xml";
+                if (App.Modpacks.Directory.EnumerateFiles().Any(file =>
+                    file.Name != Source.Name && file.Name.ToLower() == desiredName.ToLower()))
+                    throw new ArgumentException("The identifier must be unique.");
+                var newDestination = Path.Combine(App.Modpacks.Directory.FullName, desiredName);
+                Source.MoveTo(newDestination);
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Identifier"));
+            }
+        }
+
+        public int Count => XmlRoot.Element("modpack").Element("mods").Elements().Count();
+
+        public bool IsReadOnly => false;
+
+        public ModInfo this[int index]
+        {
+            get => App.Mods.Mods.First(mod =>
+                mod.Identifier == XmlRoot.Element("modpack").Element("mods").Elements().ElementAt(index).Value);
+            set => XmlRoot.Element("modpack").Element("mods").Elements().ElementAt(index).Value = value.Identifier;
         }
 
         public void Add(ModInfo item)
         {
-            CopyTo(new ModInfo[] { item }, Count);
+            CopyTo(new[] {item}, Count);
         }
 
         public void Insert(int index, ModInfo item)
         {
-            CopyTo(new ModInfo[] { item }, index);
+            CopyTo(new[] {item}, index);
         }
 
         public void Clear()
@@ -112,7 +89,8 @@ namespace RimWorldLauncher.Models
 
         public bool Contains(ModInfo item)
         {
-            return XmlRoot.Element("modpack").Element("mods").Elements().Any((element) => element.Value == item.Identifier);
+            return XmlRoot.Element("modpack").Element("mods").Elements()
+                .Any(element => element.Value == item.Identifier);
         }
 
         public void CopyTo(ModInfo[] array, int arrayIndex)
@@ -123,15 +101,12 @@ namespace RimWorldLauncher.Models
             {
                 var newMod = new XElement("li", mod.Identifier);
                 if (previousMod != null)
-                {
                     previousMod.AddAfterSelf(newMod);
-                }
                 else
-                {
                     mods.AddFirst(newMod);
-                }
                 previousMod = newMod;
             }
+
             CollectionChanged?.Invoke(
                 this,
                 new NotifyCollectionChangedEventArgs(
@@ -143,32 +118,15 @@ namespace RimWorldLauncher.Models
             this.Save();
         }
 
-        public bool Remove(ModInfo item) => Remove(item, null);
-
-        public bool Remove(ModInfo item, int? index)
+        public bool Remove(ModInfo item)
         {
-            var itemToRemove = XmlRoot.Element("modpack").Element("mods").Elements().FirstOrDefault((element) => element.Value == item.Identifier);
-            if (itemToRemove == null)
-            {
-                return false;
-            }
-            var indexToRemove = index ?? XmlRoot.Element("modpack").Element("mods").Elements().FirstIndex((element) => element.Value == item.Identifier);
-            itemToRemove.Remove();
-            CollectionChanged?.Invoke(
-                this,
-                new NotifyCollectionChangedEventArgs(
-                    NotifyCollectionChangedAction.Remove,
-                    new ModInfo[] { item },
-                    indexToRemove
-                )
-            );
-            this.Save();
-            return true;
+            return Remove(item, null);
         }
 
         public int IndexOf(ModInfo item)
         {
-            return XmlRoot.Element("modpack").Element("mods").Elements().FirstIndex((element) => element.Value == item.Identifier);
+            return XmlRoot.Element("modpack").Element("mods").Elements()
+                .FirstIndex(element => element.Value == item.Identifier);
         }
 
         public void RemoveAt(int index)
@@ -187,20 +145,59 @@ namespace RimWorldLauncher.Models
             return new ModpackEnumerator(this);
         }
 
+        public FileInfo Source { get; set; }
+        public XDocument XmlRoot { get; set; }
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        private void Source_Changed(object sender, FileSystemEventArgs e)
+        {
+            Application.Current.Dispatcher.Invoke(delegate
+            {
+                this.Load();
+                CollectionChanged?.Invoke(this,
+                    new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            });
+        }
+
+        public void Delete()
+        {
+            Source.Delete();
+        }
+
+        public bool Remove(ModInfo item, int? index)
+        {
+            var itemToRemove = XmlRoot.Element("modpack").Element("mods").Elements()
+                .FirstOrDefault(element => element.Value == item.Identifier);
+            if (itemToRemove == null) return false;
+            var indexToRemove = index ?? XmlRoot.Element("modpack").Element("mods").Elements()
+                                    .FirstIndex(element => element.Value == item.Identifier);
+            itemToRemove.Remove();
+            CollectionChanged?.Invoke(
+                this,
+                new NotifyCollectionChangedEventArgs(
+                    NotifyCollectionChangedAction.Remove,
+                    new[] {item},
+                    indexToRemove
+                )
+            );
+            this.Save();
+            return true;
+        }
+
         private class ModpackEnumerator : IEnumerator<ModInfo>
         {
-            public ModInfo Current => _Modpack[_Index];
-
-            object IEnumerator.Current => Current as object;
-
-            private Modpack _Modpack { get; }
-            private int _Index { get; set; }
-
             public ModpackEnumerator(Modpack modpack)
             {
-                _Index = -1;
-                _Modpack = modpack;
+                Index = -1;
+                Modpack = modpack;
             }
+
+            private Modpack Modpack { get; }
+            private int Index { get; set; }
+            public ModInfo Current => Modpack[Index];
+
+            object IEnumerator.Current => Current;
 
             public void Dispose()
             {
@@ -208,12 +205,12 @@ namespace RimWorldLauncher.Models
 
             public bool MoveNext()
             {
-                return (++_Index < _Modpack.Count);
+                return ++Index < Modpack.Count;
             }
 
             public void Reset()
             {
-                _Index = 0;
+                Index = 0;
             }
         }
     }
