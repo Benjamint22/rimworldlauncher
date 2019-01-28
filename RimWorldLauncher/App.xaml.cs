@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -37,9 +38,12 @@ namespace RimWorldLauncher
         public void SwitchMainWindow(Window newWindow, Window parentWindow = null)
         {
             if (MainWindow != null) MainWindow.Closed -= MainWindow_Closed;
+            Debug.Assert(newWindow != null, nameof(newWindow) + " != null");
             MainWindow = newWindow;
             if (parentWindow == null)
+            {
                 MainWindow.Closed += MainWindow_Closed;
+            }
             else
                 MainWindow.Closed += (sender, e) => SwitchMainWindow(parentWindow);
             MainWindow.Show();
@@ -72,6 +76,7 @@ namespace RimWorldLauncher
                             directory.Name == RimWorldLauncher.Properties.Resources.SavesFolderName)
                         .MoveTo(Path.Combine(profile.ProfileFolder.FullName,
                             RimWorldLauncher.Properties.Resources.SavesFolderName));
+                    Profiles.Refresh();
                 }
                 else
                 {
