@@ -1,9 +1,10 @@
 ﻿using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
+using RimWorldLauncher.Models;
 using RimWorldLauncher.Properties;
 
-namespace RimWorldLauncher.Models
+namespace RimWorldLauncher.Services
 {
     public class ModpacksReader
     {
@@ -30,11 +31,10 @@ namespace RimWorldLauncher.Models
 
         public void AddVanillaModpack()
         {
-            if (!List.Any(modpack => modpack.Identifier == "vanilla"))
-            {
-                new Modpack("Vanilla (default)", "vanilla");
-                Refresh();
-            }
+            if (List.Any(modpack => modpack.Identifier == "vanilla")) return;
+            // ReSharper disable once ObjectCreationAsStatement
+            new Modpack("Vanilla (default)", "vanilla");
+            Refresh();
         }
     }
 }

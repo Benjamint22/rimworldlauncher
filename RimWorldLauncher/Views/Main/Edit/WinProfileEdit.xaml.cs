@@ -1,5 +1,6 @@
 ﻿using System.Linq;
 using System.Windows;
+using RimWorldLauncher.Mixins;
 using RimWorldLauncher.Models;
 
 namespace RimWorldLauncher.Views.Main.Edit
@@ -7,7 +8,7 @@ namespace RimWorldLauncher.Views.Main.Edit
     /// <summary>
     ///     Interaction logic for WinModEdit.xaml
     /// </summary>
-    public partial class WinProfileEdit : Window
+    public partial class WinProfileEdit
     {
         public WinProfileEdit()
         {

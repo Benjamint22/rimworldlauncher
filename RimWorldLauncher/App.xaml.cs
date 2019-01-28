@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using RimWorldLauncher.Models;
+using RimWorldLauncher.Services;
 using RimWorldLauncher.Views.Main;
 using RimWorldLauncher.Views.Startup;
 
@@ -11,7 +12,7 @@ namespace RimWorldLauncher
     /// <summary>
     ///     Interaction logic for App.xaml
     /// </summary>
-    public partial class App : Application
+    public partial class App
     {
         public App()
         {
@@ -25,6 +26,7 @@ namespace RimWorldLauncher
         public static ModpacksReader Modpacks { get; private set; }
         public static ProfilesReader Profiles { get; private set; }
         public static ActiveModsConfigReader ActiveModsConfig { get; private set; }
+        // ReSharper disable once MemberCanBePrivate.Global
         public static App Instance { get; private set; }
 
         public static void ShowError(string message, string caption = "Error")

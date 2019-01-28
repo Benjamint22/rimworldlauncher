@@ -26,7 +26,7 @@ namespace RimWorldLauncher
         /// </summary>
         private const string NonInterpretedPathPrefix = @"\??\";
 
-        private static readonly Dictionary<string, FileSystemWatcher> _fileWatchers =
+        private static readonly Dictionary<string, FileSystemWatcher> FileWatchers =
             new Dictionary<string, FileSystemWatcher>();
 
         [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
@@ -54,10 +54,10 @@ namespace RimWorldLauncher
         public static FileSystemWatcher Watch(this FileInfo file, FileSystemEventHandler onChanged)
         {
             FileSystemWatcher watcher;
-            if (_fileWatchers.ContainsKey(file.FullName))
+            if (FileWatchers.ContainsKey(file.FullName))
                 watcher = file.GetWatcher();
             else
-                _fileWatchers[file.FullName] = watcher = new FileSystemWatcher
+                FileWatchers[file.FullName] = watcher = new FileSystemWatcher
                 {
                     Path = file.DirectoryName,
                     Filter = file.Name,
@@ -75,7 +75,7 @@ namespace RimWorldLauncher
         /// <returns>The watcher of <paramref name="file" /> or null.</returns>
         public static FileSystemWatcher GetWatcher(this FileInfo file)
         {
-            return _fileWatchers.ContainsKey(file.FullName) ? _fileWatchers[file.FullName] : null;
+            return FileWatchers.ContainsKey(file.FullName) ? FileWatchers[file.FullName] : null;
         }
 
         /// <summary>
@@ -143,9 +143,8 @@ namespace RimWorldLauncher
                 {
                     Marshal.StructureToPtr(reparseDataBuffer, inBuffer, false);
 
-                    int bytesReturned;
                     var result = DeviceIoControl(handle.DangerousGetHandle(), FsctlSetReparsePoint,
-                        inBuffer, targetDirBytes.Length + 20, IntPtr.Zero, 0, out bytesReturned, IntPtr.Zero);
+                        inBuffer, targetDirBytes.Length + 20, IntPtr.Zero, 0, out _, IntPtr.Zero);
 
                     if (!result)
                         throw new Exception("Unable to create junction point.");
@@ -175,33 +174,40 @@ namespace RimWorldLauncher
         [Flags]
         private enum EFileAccess : uint
         {
+            // ReSharper disable UnusedMember.Local
             GenericRead = 0x80000000,
             GenericWrite = 0x40000000,
             GenericExecute = 0x20000000,
             GenericAll = 0x10000000
+            // ReSharper restore UnusedMember.Local
         }
 
         [Flags]
         private enum EFileShare : uint
         {
+            // ReSharper disable UnusedMember.Local
             None = 0x00000000,
             Read = 0x00000001,
             Write = 0x00000002,
             Delete = 0x00000004
+            // ReSharper restore UnusedMember.Local
         }
 
         private enum ECreationDisposition : uint
         {
+            // ReSharper disable UnusedMember.Local
             New = 1,
             CreateAlways = 2,
             OpenExisting = 3,
             OpenAlways = 4,
             TruncateExisting = 5
+            // ReSharper restore UnusedMember.Local
         }
 
         [Flags]
         private enum EFileAttributes : uint
         {
+            // ReSharper disable UnusedMember.Local
             Readonly = 0x00000001,
             Hidden = 0x00000002,
             System = 0x00000004,
@@ -227,6 +233,7 @@ namespace RimWorldLauncher
             OpenReparsePoint = 0x00200000,
             OpenNoRecall = 0x00100000,
             FirstPipeInstance = 0x00080000
+            // ReSharper restore UnusedMember.Local
         }
 
         [StructLayout(LayoutKind.Sequential)]
@@ -247,6 +254,7 @@ namespace RimWorldLauncher
             /// <summary>
             ///     Reserved; do not use.
             /// </summary>
+            // ReSharper disable once MemberCanBePrivate.Local
             public readonly ushort Reserved;
 
             /// <summary>

@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using RimWorldLauncher.Models;
 using RimWorldLauncher.Properties;
 
-namespace RimWorldLauncher.Models
+namespace RimWorldLauncher.Services
 {
     public class InstalledMods
     {

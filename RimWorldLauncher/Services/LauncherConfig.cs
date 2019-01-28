@@ -1,8 +1,9 @@
 ﻿using System;
 using System.IO;
 using System.Xml.Linq;
+using RimWorldLauncher.Mixins;
 
-namespace RimWorldLauncher.Models
+namespace RimWorldLauncher.Services
 {
     public class LauncherConfig : IMixinXmlConfig
     {
@@ -20,31 +21,35 @@ namespace RimWorldLauncher.Models
 
         public DirectoryInfo ReadGameFolder()
         {
-            return CastPath(XmlRoot.Element("configuration").Element("gameFolder").Value);
+            return CastPath(XmlRoot.Element("configuration")?.Element("gameFolder")?.Value);
         }
 
         public bool SetGameFolder(string folder)
         {
             var info = CastPath(folder);
             if (info == null) return false;
+            // ReSharper disable PossibleNullReferenceException
             XmlRoot.Element("configuration").Element("gameFolder").Value = info.FullName;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
 
         public DirectoryInfo ReadDataFolder()
         {
-            return CastPath(XmlRoot.Element("configuration").Element("dataFolder").Value);
+            return CastPath(XmlRoot?.Element("configuration")?.Element("dataFolder")?.Value);
         }
 
         public bool SetDataFolder(string folder)
         {
             var info = CastPath(folder);
             if (info == null) return false;
+            // ReSharper disable PossibleNullReferenceException
             XmlRoot.Element("configuration").Element("dataFolder").Value = info.FullName;
+            // ReSharper restore PossibleNullReferenceException
             return true;
         }
 
-        private DirectoryInfo CastPath(string path)
+        private static DirectoryInfo CastPath(string path)
         {
             path = Environment.ExpandEnvironmentVariables(path);
             if (string.IsNullOrEmpty(path)) return null;

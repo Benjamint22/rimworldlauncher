@@ -1,7 +1,7 @@
 ﻿using System.IO;
 using System.Xml.Linq;
 
-namespace RimWorldLauncher.Models
+namespace RimWorldLauncher.Mixins
 {
     /// <summary>
     ///     A mixin that allows saving and loading of a XDocument to a FileInfo.
@@ -25,12 +25,12 @@ namespace RimWorldLauncher.Models
                     stream.Close();
                 }
             }
-            catch (IOException e)
+            catch (IOException)
             {
                 if (tries > 0)
                     config.Load(tries - 1);
                 else
-                    throw e;
+                    throw;
             }
         }
 

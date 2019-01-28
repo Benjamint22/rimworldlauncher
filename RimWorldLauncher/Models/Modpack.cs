@@ -7,6 +7,7 @@ using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Xml.Linq;
+using RimWorldLauncher.Mixins;
 
 namespace RimWorldLauncher.Models
 {

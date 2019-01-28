@@ -1,5 +1,4 @@
 ﻿using System.Windows;
-using System.Windows.Controls;
 using RimWorldLauncher.Models;
 
 namespace RimWorldLauncher.Views.Main
@@ -7,7 +6,7 @@ namespace RimWorldLauncher.Views.Main
     /// <summary>
     ///     Interaction logic for PgMod.xaml
     /// </summary>
-    public partial class PgMod : Page
+    public partial class PgMod
     {
         public PgMod()
         {

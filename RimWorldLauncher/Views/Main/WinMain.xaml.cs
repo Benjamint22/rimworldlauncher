@@ -1,4 +1,5 @@
-﻿using System.Windows;
+﻿using System.Diagnostics;
+using System.Windows;
 using System.Windows.Controls;
 using RimWorldLauncher.Models;
 using RimWorldLauncher.Views.Main.Edit;
@@ -8,7 +9,7 @@ namespace RimWorldLauncher.Views.Main
     /// <summary>
     ///     Interaction logic for MainWindow.xaml
     /// </summary>
-    public partial class WinMain : Window
+    public partial class WinMain
     {
         private Profile _selectedProfile;
 
@@ -24,7 +25,7 @@ namespace RimWorldLauncher.Views.Main
 
         private void LvProfiles_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            _selectedProfile = (sender as ListView).SelectedItem as Profile;
+            _selectedProfile = (sender as ListView)?.SelectedItem as Profile;
             BtnPlay.IsEnabled = _selectedProfile != null;
         }
 
@@ -36,19 +37,17 @@ namespace RimWorldLauncher.Views.Main
 
         private void BtnModpacks_OnClick(object sender, RoutedEventArgs e)
         {
-            //App.Instance.SwitchMainWindow(new WinModpacks(), this);
-            //Hide();
             new WinModpacks().ShowDialog();
         }
 
         private void BtnPlay_OnClick(object sender, RoutedEventArgs e)
         {
-            if (_selectedProfile != null) _selectedProfile.StartGame();
+            _selectedProfile?.StartGame();
         }
 
         private void BtnEdit_OnClick(object sender, RoutedEventArgs e)
         {
-            var profile = (sender as Button).DataContext as Profile;
+            var profile = (sender as Button)?.DataContext as Profile;
             var editWindow = new WinProfileEdit
             {
                 Profile = profile
@@ -58,19 +57,16 @@ namespace RimWorldLauncher.Views.Main
 
         private void BtnDelete_OnClick(object sender, RoutedEventArgs e)
         {
-            var profile = (sender as Button).DataContext as Profile;
-            if (
-                MessageBox.Show(
+            var profile = (sender as Button)?.DataContext as Profile;
+            Debug.Assert(profile != null, nameof(profile) + " != null");
+            if (MessageBox.Show(
                     $"Are you sure you want to delete \"{profile.DisplayName}\" and all its saves?\nThis cannot be undone.",
                     "Delete profile?",
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Warning
-                ) == MessageBoxResult.Yes
-            )
-            {
-                profile.Delete();
-                App.Profiles.Refresh();
-            }
+                ) != MessageBoxResult.Yes) return;
+            profile.Delete();
+            App.Profiles.Refresh();
         }
     }
 }

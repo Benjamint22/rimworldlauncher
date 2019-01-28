@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:RimWorldLauncher.Views.Main"
+        xmlns:models="clr-namespace:RimWorldLauncher.Models"
         mc:Ignorable="d"
         Loaded="Window_Loaded"
         Title="MainWindow" Width="800" Height="600" WindowStartupLocation="CenterScreen">
@@ -33,7 +33,7 @@
                 HorizontalContentAlignment="Center"
                 Grid.Row="1">
                 <ListView.ItemTemplate>
-                    <DataTemplate>
+                    <DataTemplate DataType="models:Profile">
                         <DockPanel Width="{Binding ElementName=LvProfiles,Path=ActualWidth}" MaxWidth="256">
                             <StackPanel DockPanel.Dock="Left" HorizontalAlignment="Left">
                                 <Label Content="{Binding DisplayName}" HorizontalAlignment="Left" Margin="0"

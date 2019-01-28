@@ -16,15 +16,13 @@ namespace RimWorldLauncher.Models
 
     public class ModInfo
     {
-        private static readonly Random _rand = new Random();
-
-        private static readonly BitmapImage _defaultPreview =
+        private static readonly BitmapImage DefaultPreview =
             new BitmapImage(new Uri("/Images/DefaultPreview.png", UriKind.Relative));
 
         public ModInfo(DirectoryInfo modDirectory)
         {
-            ModDirectory = modDirectory ?? throw new ArgumentNullException();
             // Open the About directory
+            if (modDirectory == null) throw new ArgumentNullException();
             var aboutDirectory = modDirectory
                 .EnumerateDirectories().FirstOrDefault(directory => directory.Name == "About");
             if (aboutDirectory == null) throw new InvalidModDirectoryException();
@@ -58,7 +56,7 @@ namespace RimWorldLauncher.Models
                     Preview.Freeze();
                 }
             else
-                Preview = _defaultPreview;
+                Preview = DefaultPreview;
 
             // About
             // Copy info from About.xml
@@ -99,12 +97,5 @@ namespace RimWorldLauncher.Models
         public string TargetGameVersion { get; }
         public string Url { get; }
         public string Description { get; }
-
-        private DirectoryInfo ModDirectory { get; }
-
-        private static string GetRandomNumberSeries(int length)
-        {
-            return string.Join("", Enumerable.Repeat("", length).Select(c => _rand.Next(10)));
-        }
     }
 }

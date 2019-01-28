@@ -12,7 +12,7 @@ namespace RimWorldLauncher.Views.Main
     /// <summary>
     ///     Interaction logic for PgMods.xaml
     /// </summary>
-    public partial class WinModpacks : Window
+    public partial class WinModpacks
     {
         private Modpack _currentModpack;
         private Point? _dragStartPoint;

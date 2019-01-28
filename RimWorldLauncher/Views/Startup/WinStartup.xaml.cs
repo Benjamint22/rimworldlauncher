@@ -1,13 +1,13 @@
 ﻿using System.Windows;
 using System.Windows.Forms;
-using RimWorldLauncher.Models;
+using RimWorldLauncher.Mixins;
 
 namespace RimWorldLauncher.Views.Startup
 {
     /// <summary>
     ///     Interaction logic for WinStartup.xaml
     /// </summary>
-    public partial class WinStartup : Window
+    public partial class WinStartup
     {
         private static readonly FolderBrowserDialog FolderBrowser = new FolderBrowserDialog();
 
@@ -24,7 +24,7 @@ namespace RimWorldLauncher.Views.Startup
 
         private void BrowseGameFolder_Click(object sender, RoutedEventArgs e)
         {
-            FolderBrowser.Description = $"The folder containing {Properties.Resources.LauncherName}";
+            FolderBrowser.Description = $@"The folder containing {Properties.Resources.LauncherName}";
             FolderBrowser.SelectedPath = TxtGameFolder.Text;
             if (FolderBrowser.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 TxtGameFolder.Text = FolderBrowser.SelectedPath;
@@ -32,7 +32,7 @@ namespace RimWorldLauncher.Views.Startup
 
         private void BrowseDataFolder_Click(object sender, RoutedEventArgs e)
         {
-            FolderBrowser.Description = $"The folder containing the {Properties.Resources.SavesFolderName} folder.";
+            FolderBrowser.Description = $@"The folder containing the {Properties.Resources.SavesFolderName} folder.";
             FolderBrowser.SelectedPath = TxtDataFolder.Text;
             if (FolderBrowser.ShowDialog() == System.Windows.Forms.DialogResult.OK)
                 TxtDataFolder.Text = FolderBrowser.SelectedPath;

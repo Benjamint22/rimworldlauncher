@@ -3,8 +3,6 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:dd="urn:gong-wpf-dragdrop"
-        xmlns:local="clr-namespace:RimWorldLauncher.Views.Main"
         xmlns:models="clr-namespace:RimWorldLauncher.Models"
         mc:Ignorable="d"
         Loaded="PgModpacks_OnLoaded"
@@ -48,15 +46,7 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <Grid Grid.Row="2">
-                <Grid.RowDefinitions>
-                    <RowDefinition />
-                </Grid.RowDefinitions>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition />
-                </Grid.ColumnDefinitions>
-                <Button Content="Create" Click="BtnCreate_OnClick" />
-            </Grid>
+            <Button Content="Create" Click="BtnCreate_OnClick" Grid.Row="2"/>
         </Grid>
         <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" />
         <Grid Grid.Column="2">
@@ -75,9 +65,9 @@
                 Drop="LvInstalledMods_Drop"
                 AllowDrop="True"
                 SelectionMode="Extended"
-                Grid.Row="2">
+                Grid.Row="1">
                 <ListView.ItemTemplate>
-                    <DataTemplate>
+                    <DataTemplate DataType="models:ModInfo">
                         <StackPanel>
                             <Label Content="{Binding DisplayName}" HorizontalAlignment="Left" Margin="0" FontSize="14" />
                             <Label Content="{Binding TargetGameVersion}" HorizontalAlignment="Left" Margin="0"
@@ -105,9 +95,9 @@
                 KeyDown="LvActivatedMods_KeyDown"
                 AllowDrop="True"
                 SelectionMode="Extended"
-                Grid.Row="2" IsEnabled="False">
+                Grid.Row="1" IsEnabled="False">
                 <ListView.ItemTemplate>
-                    <DataTemplate>
+                    <DataTemplate DataType="models:ModInfo">
                         <StackPanel>
                             <Label Content="{Binding DisplayName}" HorizontalAlignment="Left" Margin="0" FontSize="14" />
                             <Label Content="{Binding TargetGameVersion}" HorizontalAlignment="Left" Margin="0"
