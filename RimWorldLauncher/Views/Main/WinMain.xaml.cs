@@ -3,6 +3,7 @@ using System.Windows;
 using System.Windows.Controls;
 using RimWorldLauncher.Models;
 using RimWorldLauncher.Views.Main.Edit;
+using RimWorldLauncher.Views.Startup;
 
 namespace RimWorldLauncher.Views.Main
 {
@@ -67,6 +68,11 @@ namespace RimWorldLauncher.Views.Main
                 ) != MessageBoxResult.Yes) return;
             profile.Delete();
             App.Profiles.Refresh();
+        }
+
+        private void SettingsMenuItem_OnClick(object sender, RoutedEventArgs e)
+        {
+            (new WinSettings()).ShowDialog();
         }
     }
 }

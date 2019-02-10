@@ -45,6 +45,23 @@ namespace RimWorldLauncher
             EFileAttributes dwFlagsAndAttributes,
             IntPtr hTemplateFile);
 
+        public static DirectoryInfo FromPath(string path)
+        {
+            path = Environment.ExpandEnvironmentVariables(path);
+            if (string.IsNullOrEmpty(path)) return null;
+            DirectoryInfo directoryInfo;
+            try
+            {
+                directoryInfo = new DirectoryInfo(path);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+
+            return directoryInfo;
+        }
+
         /// <summary>
         ///     Starts watching <paramref name="file" /> for change in its content.
         /// </summary>

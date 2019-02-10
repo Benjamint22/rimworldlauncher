@@ -77,8 +77,8 @@
     <Compile Include="Views\Main\Edit\WinModpackEdit.xaml.cs">
       <DependentUpon>WinModpackEdit.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\Startup\WinStartup.xaml.cs">
-      <DependentUpon>WinStartup.xaml</DependentUpon>
+    <Compile Include="Views\Startup\WinSettings.xaml.cs">
+      <DependentUpon>WinSettings.xaml</DependentUpon>
     </Compile>
     <Page Include="Views\Main\Edit\WinProfileEdit.xaml">
       <Generator>MSBuild:Compile</Generator>
@@ -108,7 +108,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="Views\Startup\WinStartup.xaml">
+    <Page Include="Views\Startup\WinSettings.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

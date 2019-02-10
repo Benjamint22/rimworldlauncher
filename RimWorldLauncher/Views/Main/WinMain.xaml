@@ -19,7 +19,7 @@
             </Grid.RowDefinitions>
             <Menu>
                 <MenuItem Header="File">
-                    <MenuItem Header="Settings" />
+                    <MenuItem Header="Settings" Click="SettingsMenuItem_OnClick" />
                 </MenuItem>
                 <MenuItem Header="About">
                     <MenuItem Header="About RimWorld Launcher" />

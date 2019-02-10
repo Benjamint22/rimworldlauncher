@@ -96,7 +96,7 @@ namespace RimWorldLauncher
             }
             else
             {
-                MainWindow = new WinStartup();
+                MainWindow = new WinSettings();
                 if (MainWindow.ShowDialog() ?? false) OpenMainWindow();
             }
         }
