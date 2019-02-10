@@ -49,24 +49,6 @@ namespace RimWorldLauncher
             MainWindow.Show();
         }
 
-        private void App_OnStartup(object sender, StartupEventArgs e)
-        {
-            if (Config.FetchGameFolder() != null && Config.FetchDataFolder() != null)
-            {
-                OpenMainWindow();
-            }
-            else
-            {
-                MainWindow = new WinSettings();
-                if (MainWindow.ShowDialog() ?? false) OpenMainWindow();
-            }
-        }
-
-        private void MainWindow_Closed(object sender, EventArgs e)
-        {
-            Shutdown();
-        }
-
         private void OpenMainWindow()
         {
             Mods = new ModInstallationService();
@@ -104,6 +86,24 @@ namespace RimWorldLauncher
             }
 
             SwitchMainWindow(new WinMain());
+        }
+
+        private void App_OnStartup(object sender, StartupEventArgs e)
+        {
+            if (Config.FetchGameFolder() != null && Config.FetchDataFolder() != null)
+            {
+                OpenMainWindow();
+            }
+            else
+            {
+                MainWindow = new WinSettings();
+                if (MainWindow.ShowDialog() ?? false) OpenMainWindow();
+            }
+        }
+
+        private void MainWindow_Closed(object sender, EventArgs e)
+        {
+            Shutdown();
         }
     }
 }
