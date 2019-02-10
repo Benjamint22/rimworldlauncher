@@ -195,6 +195,7 @@ namespace RimWorldLauncher
             GenericRead = 0x80000000,
             GenericWrite = 0x40000000,
             GenericExecute = 0x20000000,
+
             GenericAll = 0x10000000
             // ReSharper restore UnusedMember.Local
         }
@@ -206,6 +207,7 @@ namespace RimWorldLauncher
             None = 0x00000000,
             Read = 0x00000001,
             Write = 0x00000002,
+
             Delete = 0x00000004
             // ReSharper restore UnusedMember.Local
         }
@@ -217,6 +219,7 @@ namespace RimWorldLauncher
             CreateAlways = 2,
             OpenExisting = 3,
             OpenAlways = 4,
+
             TruncateExisting = 5
             // ReSharper restore UnusedMember.Local
         }
@@ -249,6 +252,7 @@ namespace RimWorldLauncher
             PosixSemantics = 0x01000000,
             OpenReparsePoint = 0x00200000,
             OpenNoRecall = 0x00100000,
+
             FirstPipeInstance = 0x00080000
             // ReSharper restore UnusedMember.Local
         }

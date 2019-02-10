@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:models="clr-namespace:RimWorldLauncher.Models"
+        xmlns:models="clr-namespace:RimWorldLauncher.Classes"
         mc:Ignorable="d"
         Loaded="Window_Loaded"
         Title="MainWindow"
@@ -36,12 +36,13 @@
                 HorizontalContentAlignment="Stretch"
                 Grid.Row="1">
                 <ListView.ItemTemplate>
-                    <DataTemplate DataType="models:Profile">
+                    <DataTemplate DataType="models:BoundProfile">
                         <DockPanel>
                             <StackPanel DockPanel.Dock="Left" HorizontalAlignment="Left">
                                 <Label Content="{Binding DisplayName}" HorizontalAlignment="Left" Margin="0"
                                        FontSize="14" />
-                                <Label Content="{Binding Modpack.DisplayName}" HorizontalAlignment="Left" Margin="0"
+                                <Label Content="{Binding BoundModList.DisplayName}" HorizontalAlignment="Left"
+                                       Margin="0"
                                        FontSize="10" Foreground="DarkGray" />
                             </StackPanel>
                             <UniformGrid Rows="2" DockPanel.Dock="Right" HorizontalAlignment="Right">

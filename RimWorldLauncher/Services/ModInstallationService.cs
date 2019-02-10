@@ -1,29 +1,29 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using RimWorldLauncher.Models;
+using RimWorldLauncher.Classes;
 using RimWorldLauncher.Properties;
 
 namespace RimWorldLauncher.Services
 {
-    public class InstalledMods
+    public class ModInstallationService
     {
-        public InstalledMods()
+        public ModInstallationService()
         {
-            var gameFolder = App.Config.ReadGameFolder();
+            var gameFolder = App.Config.FetchGameFolder();
             ModsDirectory = gameFolder.EnumerateDirectories()
                                 .FirstOrDefault(directory => directory.Name == Resources.InstalledModsFolderName) ??
                             gameFolder.CreateSubdirectory(Resources.InstalledModsFolderName);
-            RefreshMods();
+            LoadMods();
         }
 
-        public List<ModInfo> Mods { get; set; }
+        public List<ModInfo> ModsList { get; set; }
 
         private DirectoryInfo ModsDirectory { get; }
 
-        public void RefreshMods()
+        public void LoadMods()
         {
-            Mods = ModsDirectory.GetDirectories().Where(modDirectory => modDirectory.Name != "Core")
+            ModsList = ModsDirectory.GetDirectories().Where(modDirectory => modDirectory.Name != "Core")
                 .Select(modDirectory => new ModInfo(modDirectory)).ToList();
         }
     }

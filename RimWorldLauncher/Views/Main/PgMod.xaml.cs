@@ -1,5 +1,5 @@
 ﻿using System.Windows;
-using RimWorldLauncher.Models;
+using RimWorldLauncher.Classes;
 
 namespace RimWorldLauncher.Views.Main
 {

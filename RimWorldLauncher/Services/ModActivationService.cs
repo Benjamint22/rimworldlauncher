@@ -3,17 +3,17 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Xml.Linq;
+using RimWorldLauncher.Classes;
 using RimWorldLauncher.Mixins;
-using RimWorldLauncher.Models;
 using RimWorldLauncher.Properties;
 
 namespace RimWorldLauncher.Services
 {
-    public class ActiveModsConfigReader : IMixinXmlConfig
+    public class ModActivationService : IMixinXmlConfig
     {
-        public ActiveModsConfigReader()
+        public ModActivationService()
         {
-            Source = App.Config.ReadDataFolder().GetDirectories().First(directory => directory.Name == "Config")
+            Source = App.Config.FetchDataFolder().GetDirectories().First(directory => directory.Name == "Config")
                 .GetFiles().First(file => file.Name == Resources.ActiveModsConfigName);
             this.Load();
         }
@@ -21,20 +21,20 @@ namespace RimWorldLauncher.Services
         public FileInfo Source { get; set; }
         public XDocument XmlRoot { get; set; }
 
-        public IEnumerable<ModInfo> GetActiveMods()
+        public IEnumerable<ModInfo> FetchActiveMods()
         {
             return XmlRoot.Element("ModsConfigData")
                 ?.Element("activeMods")
                 ?.Elements().Select(
-                modElement => modElement.Value == "Core"
-                    ? null
-                    : App.Mods.Mods.First(mod => mod.Identifier == modElement.Value)
-            ).Where(
-                mod => mod != null
-            );
+                    modElement => modElement.Value == "Core"
+                        ? null
+                        : App.Mods.ModsList.First(mod => mod.Identifier == modElement.Value)
+                ).Where(
+                    mod => mod != null
+                );
         }
 
-        public void SetActiveMods(IEnumerable<ModInfo> mods)
+        public void UpdateActiveMods(IEnumerable<ModInfo> mods)
         {
             var activeModsElement = XmlRoot.Element("ModsConfigData")?.Element("activeMods");
             Debug.Assert(activeModsElement != null, nameof(activeModsElement) + " != null");

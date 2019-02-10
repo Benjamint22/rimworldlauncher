@@ -19,8 +19,8 @@ namespace RimWorldLauncher.Views.Startup
 
         private void WinSettings_OnLoaded(object sender, RoutedEventArgs e)
         {
-            TxtGameFolder.Text = App.Config.ReadGameFolder()?.FullName ?? "";
-            TxtDataFolder.Text = App.Config.ReadDataFolder()?.FullName ?? "";
+            TxtGameFolder.Text = App.Config.FetchGameFolder()?.FullName ?? "";
+            TxtDataFolder.Text = App.Config.FetchDataFolder()?.FullName ?? "";
         }
 
         private void BrowseGameFolder_Click(object sender, RoutedEventArgs e)
@@ -46,11 +46,10 @@ namespace RimWorldLauncher.Views.Startup
 
         private void Confirm_Click(object sender, RoutedEventArgs e)
         {
-            GameDirectory gameDirectory;
-            DataDirectory dataDirectory;
             try
             {
-                gameDirectory = new GameDirectory(TxtGameFolder.Text);
+                var gameDirectory = new GameDirectory(TxtGameFolder.Text);
+                App.Config.UpdateGameFolder(gameDirectory);
             }
             catch (InvalidConfigDirectoryException)
             {
@@ -58,9 +57,11 @@ namespace RimWorldLauncher.Views.Startup
                     $"The game folder is not valid.\nIt must be the folder containing {Properties.Resources.LauncherName}.");
                 return;
             }
+
             try
             {
-                dataDirectory = new DataDirectory(TxtDataFolder.Text);
+                var dataDirectory = new DataDirectory(TxtDataFolder.Text);
+                App.Config.UpdateDataFolder(dataDirectory);
             }
             catch (InvalidConfigDirectoryException)
             {
@@ -68,20 +69,17 @@ namespace RimWorldLauncher.Views.Startup
                     $"The data folder is not valid.\nIt must be the folder containing {Properties.Resources.SavesFolderName} folder.");
                 return;
             }
-            App.Config.SetGameFolder(gameDirectory);
-            App.Config.SetDataFolder(dataDirectory);
-            App.Config.Save();
             DialogResult = true;
         }
 
         private void BtnResetGameFolder_OnClick(object sender, RoutedEventArgs e)
         {
-            TxtGameFolder.Text = App.Config.ReadGameFolder().FullName;
+            TxtGameFolder.Text = App.Config.FetchGameFolder().FullName;
         }
 
         private void BtnResetDataFolder_OnClick(object sender, RoutedEventArgs e)
         {
-            TxtDataFolder.Text = App.Config.ReadDataFolder().FullName;
+            TxtDataFolder.Text = App.Config.FetchDataFolder().FullName;
         }
     }
 }

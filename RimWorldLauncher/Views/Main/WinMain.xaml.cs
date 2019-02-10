@@ -1,7 +1,7 @@
 ﻿using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
-using RimWorldLauncher.Models;
+using RimWorldLauncher.Classes;
 using RimWorldLauncher.Views.Main.Edit;
 using RimWorldLauncher.Views.Startup;
 
@@ -12,7 +12,7 @@ namespace RimWorldLauncher.Views.Main
     /// </summary>
     public partial class WinMain
     {
-        private Profile _selectedProfile;
+        private BoundProfile _selectedBoundProfile;
 
         public WinMain()
         {
@@ -21,19 +21,19 @@ namespace RimWorldLauncher.Views.Main
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            LvProfiles.ItemsSource = App.Profiles.List;
+            LvProfiles.ItemsSource = App.Profiles.ObservableProfilesList;
         }
 
         private void LvProfiles_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            _selectedProfile = (sender as ListView)?.SelectedItem as Profile;
-            BtnPlay.IsEnabled = _selectedProfile != null;
+            _selectedBoundProfile = (sender as ListView)?.SelectedItem as BoundProfile;
+            BtnPlay.IsEnabled = _selectedBoundProfile != null;
         }
 
         private void BtnCreate_OnClick(object sender, RoutedEventArgs e)
         {
             var editWindow = new WinProfileEdit();
-            if (editWindow.ShowDialog() ?? false) App.Profiles.Refresh();
+            if (editWindow.ShowDialog() ?? false) App.Profiles.LoadProfiles();
         }
 
         private void BtnModpacks_OnClick(object sender, RoutedEventArgs e)
@@ -43,22 +43,22 @@ namespace RimWorldLauncher.Views.Main
 
         private void BtnPlay_OnClick(object sender, RoutedEventArgs e)
         {
-            _selectedProfile?.StartGame();
+            _selectedBoundProfile?.StartGame();
         }
 
         private void BtnEdit_OnClick(object sender, RoutedEventArgs e)
         {
-            var profile = (sender as Button)?.DataContext as Profile;
+            var profile = (sender as Button)?.DataContext as BoundProfile;
             var editWindow = new WinProfileEdit
             {
-                Profile = profile
+                BoundProfile = profile
             };
             editWindow.ShowDialog();
         }
 
         private void BtnDelete_OnClick(object sender, RoutedEventArgs e)
         {
-            var profile = (sender as Button)?.DataContext as Profile;
+            var profile = (sender as Button)?.DataContext as BoundProfile;
             Debug.Assert(profile != null, nameof(profile) + " != null");
             if (MessageBox.Show(
                     $"Are you sure you want to delete \"{profile.DisplayName}\" and all its saves?\nThis cannot be undone.",
@@ -67,12 +67,12 @@ namespace RimWorldLauncher.Views.Main
                     MessageBoxImage.Warning
                 ) != MessageBoxResult.Yes) return;
             profile.Delete();
-            App.Profiles.Refresh();
+            App.Profiles.LoadProfiles();
         }
 
         private void SettingsMenuItem_OnClick(object sender, RoutedEventArgs e)
         {
-            (new WinSettings()).ShowDialog();
+            new WinSettings().ShowDialog();
         }
     }
 }

@@ -9,11 +9,11 @@ using System.Windows;
 using System.Xml.Linq;
 using RimWorldLauncher.Mixins;
 
-namespace RimWorldLauncher.Models
+namespace RimWorldLauncher.Classes
 {
-    public class Modpack : IList<ModInfo>, IMixinXmlConfig, INotifyCollectionChanged, INotifyPropertyChanged
+    public class BoundModList : IList<ModInfo>, IMixinXmlConfig, INotifyCollectionChanged, INotifyPropertyChanged
     {
-        public Modpack(string displayName, string identifier)
+        public BoundModList(string displayName, string identifier)
         {
             identifier = identifier.Sanitize();
             XmlRoot = new XDocument(
@@ -27,7 +27,7 @@ namespace RimWorldLauncher.Models
             this.Save();
         }
 
-        public Modpack(FileInfo modpackXml)
+        public BoundModList(FileInfo modpackXml)
         {
             Source = modpackXml;
             Source.Watch(Source_Changed);
@@ -66,7 +66,7 @@ namespace RimWorldLauncher.Models
 
         public ModInfo this[int index]
         {
-            get => App.Mods.Mods.First(mod =>
+            get => App.Mods.ModsList.First(mod =>
                 mod.Identifier == XmlRoot.Element("modpack").Element("mods").Elements().ElementAt(index).Value);
             set => XmlRoot.Element("modpack").Element("mods").Elements().ElementAt(index).Value = value.Identifier;
         }
@@ -188,15 +188,15 @@ namespace RimWorldLauncher.Models
 
         private class ModpackEnumerator : IEnumerator<ModInfo>
         {
-            public ModpackEnumerator(Modpack modpack)
+            public ModpackEnumerator(BoundModList boundModList)
             {
                 Index = -1;
-                Modpack = modpack;
+                BoundModList = boundModList;
             }
 
-            private Modpack Modpack { get; }
+            private BoundModList BoundModList { get; }
             private int Index { get; set; }
-            public ModInfo Current => Modpack[Index];
+            public ModInfo Current => BoundModList[Index];
 
             object IEnumerator.Current => Current;
 
@@ -206,7 +206,7 @@ namespace RimWorldLauncher.Models
 
             public bool MoveNext()
             {
-                return ++Index < Modpack.Count;
+                return ++Index < BoundModList.Count;
             }
 
             public void Reset()

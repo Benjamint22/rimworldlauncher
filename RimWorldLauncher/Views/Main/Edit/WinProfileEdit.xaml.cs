@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Windows;
+using RimWorldLauncher.Classes;
 using RimWorldLauncher.Mixins;
-using RimWorldLauncher.Models;
 
 namespace RimWorldLauncher.Views.Main.Edit
 {
@@ -15,22 +15,22 @@ namespace RimWorldLauncher.Views.Main.Edit
             InitializeComponent();
         }
 
-        public Profile Profile { get; set; }
+        public BoundProfile BoundProfile { get; set; }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            CbModpack.ItemsSource = App.Modpacks.List;
-            if (Profile == null)
+            CbModpack.ItemsSource = App.Modpacks.ObservableModpacksList;
+            if (BoundProfile == null)
             {
                 BtnSave.Content = "Create";
                 Title = "Create profile";
-                CbModpack.SelectedItem = App.Modpacks.List.FirstOrDefault(modpack => modpack.Identifier == "vanilla");
+                CbModpack.SelectedItem = App.Modpacks.ObservableModpacksList.FirstOrDefault(modpack => modpack.Identifier == "vanilla");
             }
             else
             {
-                TxtName.Text = Profile.DisplayName;
-                CbModpack.SelectedItem = Profile.Modpack;
-                Title = $"Editing {Profile.DisplayName}";
+                TxtName.Text = BoundProfile.DisplayName;
+                CbModpack.SelectedItem = BoundProfile.BoundModList;
+                Title = $"Editing {BoundProfile.DisplayName}";
             }
         }
 
@@ -42,19 +42,19 @@ namespace RimWorldLauncher.Views.Main.Edit
                 return;
             }
 
-            if (Profile == null)
+            if (BoundProfile == null)
             {
-                Profile = new Profile(
+                BoundProfile = new BoundProfile(
                     TxtName.Text,
-                    CbModpack.SelectedItem as Modpack,
+                    CbModpack.SelectedItem as BoundModList,
                     TxtName.Text
                 );
             }
             else
             {
-                Profile.DisplayName = TxtName.Text;
-                Profile.Modpack = CbModpack.SelectedItem as Modpack;
-                Profile.Save();
+                BoundProfile.DisplayName = TxtName.Text;
+                BoundProfile.BoundModList = CbModpack.SelectedItem as BoundModList;
+                BoundProfile.Save();
             }
 
             DialogResult = true;

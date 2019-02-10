@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-        xmlns:models="clr-namespace:RimWorldLauncher.Models"
+        xmlns:models="clr-namespace:RimWorldLauncher.Classes"
         mc:Ignorable="d"
         Loaded="PgModpacks_OnLoaded"
         Title="Modpacks" Width="1280" Height="600" WindowStartupLocation="CenterScreen">
@@ -29,7 +29,7 @@
                       SelectionChanged="ModpacksList_OnSelectionChanged" HorizontalContentAlignment="Stretch"
                       Grid.Row="1">
                 <ListView.ItemTemplate>
-                    <DataTemplate DataType="{x:Type models:Modpack}">
+                    <DataTemplate DataType="{x:Type models:BoundModList}">
                         <DockPanel>
                             <StackPanel DockPanel.Dock="Left" HorizontalAlignment="Left">
                                 <Label Content="{Binding DisplayName}" HorizontalAlignment="Left" Margin="0"
@@ -46,7 +46,7 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <Button Content="Create" Click="BtnCreate_OnClick" Grid.Row="2"/>
+            <Button Content="Create" Click="BtnCreate_OnClick" Grid.Row="2" />
         </Grid>
         <GridSplitter Grid.Column="1" HorizontalAlignment="Stretch" />
         <Grid Grid.Column="2">

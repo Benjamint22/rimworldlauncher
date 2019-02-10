@@ -3,6 +3,7 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using RimWorldLauncher.Mixins;
+using RimWorldLauncher.Properties;
 
 namespace RimWorldLauncher.Services
 {
@@ -12,8 +13,6 @@ namespace RimWorldLauncher.Services
 
     public abstract class ConfigDirectory
     {
-        public DirectoryInfo Directory { get; private set; }
-        
         public ConfigDirectory(string path)
         {
             var info = FileSystemInfoExtensions.FromPath(path);
@@ -22,10 +21,12 @@ namespace RimWorldLauncher.Services
             Directory = info;
         }
 
+        public DirectoryInfo Directory { get; }
+
         protected abstract bool IsValid(DirectoryInfo directoryInfo);
     }
 
-    public class GameDirectory: ConfigDirectory
+    public class GameDirectory : ConfigDirectory
     {
         public GameDirectory(string path) : base(path)
         {
@@ -34,11 +35,11 @@ namespace RimWorldLauncher.Services
         protected override bool IsValid(DirectoryInfo directoryInfo)
         {
             return directoryInfo.EnumerateFiles()
-                .Any(directory => directory.Name == Properties.Resources.LauncherName);
+                .Any(directory => directory.Name == Resources.LauncherName);
         }
     }
-    
-    public class DataDirectory: ConfigDirectory
+
+    public class DataDirectory : ConfigDirectory
     {
         public DataDirectory(string path) : base(path)
         {
@@ -47,13 +48,13 @@ namespace RimWorldLauncher.Services
         protected override bool IsValid(DirectoryInfo directoryInfo)
         {
             return directoryInfo.EnumerateDirectories()
-                .Any(directory => directory.Name == Properties.Resources.SavesFolderName);
+                .Any(directory => directory.Name == Resources.SavesFolderName);
         }
     }
-    
-    public class LauncherConfig : IMixinXmlConfig
-    {       
-        public LauncherConfig()
+
+    public class ConfigurationService : IMixinXmlConfig
+    {
+        public ConfigurationService()
         {
             var configFile = new FileInfo("launcher.xml");
             if (configFile.Exists)
@@ -65,32 +66,34 @@ namespace RimWorldLauncher.Services
         public FileInfo Source { get; set; }
         public XDocument XmlRoot { get; set; }
 
-        public DirectoryInfo ReadGameFolder()
+        public DirectoryInfo FetchGameFolder()
         {
             return FileSystemInfoExtensions.FromPath(
                 XmlRoot.Element("configuration")?.Element("gameFolder")?.Value
             );
         }
 
-        public void SetGameFolder(GameDirectory directory)
+        public void UpdateGameFolder(GameDirectory directory)
         {
             // ReSharper disable PossibleNullReferenceException
             XmlRoot.Element("configuration").Element("gameFolder").Value = directory.Directory.FullName;
             // ReSharper restore PossibleNullReferenceException
+            this.Save();
         }
 
-        public DirectoryInfo ReadDataFolder()
+        public DirectoryInfo FetchDataFolder()
         {
             return FileSystemInfoExtensions.FromPath(
                 XmlRoot?.Element("configuration")?.Element("dataFolder")?.Value
             );
         }
 
-        public void SetDataFolder(DataDirectory directory)
+        public void UpdateDataFolder(DataDirectory directory)
         {
             // ReSharper disable PossibleNullReferenceException
             XmlRoot.Element("configuration").Element("dataFolder").Value = directory.Directory.FullName;
             // ReSharper restore PossibleNullReferenceException
+            this.Save();
         }
 
         private void LoadConfig(FileInfo config)
@@ -110,10 +113,11 @@ namespace RimWorldLauncher.Services
             );
             try
             {
-                SetDataFolder(new DataDirectory(@"%APPDATA%\..\LocalLow\Ludeon Studios\RimWorld by Ludeon Studios"));
+                UpdateDataFolder(new DataDirectory(@"%APPDATA%\..\LocalLow\Ludeon Studios\RimWorld by Ludeon Studios"));
             }
             catch (InvalidConfigDirectoryException)
-            {}
+            {
+            }
             this.Save();
         }
     }

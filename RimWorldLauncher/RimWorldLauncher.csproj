@@ -64,12 +64,12 @@
     <Compile Include="FileSystemInfoExtensions.cs" />
     <Compile Include="IEnumerableExtensions.cs" />
     <Compile Include="Mixins\MixinXmlConfig.cs" />
-    <Compile Include="Models\Profile.cs" />
-    <Compile Include="Services\ActiveModsConfigReader.cs" />
-    <Compile Include="Services\InstalledMods.cs" />
-    <Compile Include="Services\LauncherConfig.cs" />
-    <Compile Include="Services\ModpacksReader.cs" />
-    <Compile Include="Services\ProfilesReader.cs" />
+    <Compile Include="Classes\BoundProfile.cs" />
+    <Compile Include="Services\ModActivationService.cs" />
+    <Compile Include="Services\ModInstallationService.cs" />
+    <Compile Include="Services\ConfigurationService.cs" />
+    <Compile Include="Services\ModpacksService.cs" />
+    <Compile Include="Services\ProfilesService.cs" />
     <Compile Include="StringExtensions.cs" />
     <Compile Include="Views\Main\Edit\WinProfileEdit.xaml.cs">
       <DependentUpon>WinProfileEdit.xaml</DependentUpon>
@@ -114,8 +114,8 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\ModInfo.cs" />
-    <Compile Include="Models\Modpack.cs" />
+    <Compile Include="Classes\ModInfo.cs" />
+    <Compile Include="Classes\BoundModList.cs" />
     <Compile Include="Views\Main\PgMod.xaml.cs">
       <DependentUpon>PgMod.xaml</DependentUpon>
     </Compile>

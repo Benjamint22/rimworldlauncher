@@ -4,7 +4,7 @@ using System.Linq;
 using System.Windows.Media.Imaging;
 using System.Xml.Linq;
 
-namespace RimWorldLauncher.Models
+namespace RimWorldLauncher.Classes
 {
     public class InvalidModDirectoryException : Exception
     {

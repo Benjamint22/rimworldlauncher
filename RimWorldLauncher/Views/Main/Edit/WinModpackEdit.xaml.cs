@@ -1,6 +1,6 @@
 ﻿using System.Windows;
+using RimWorldLauncher.Classes;
 using RimWorldLauncher.Mixins;
-using RimWorldLauncher.Models;
 
 namespace RimWorldLauncher.Views.Main.Edit
 {
@@ -14,19 +14,19 @@ namespace RimWorldLauncher.Views.Main.Edit
             InitializeComponent();
         }
 
-        public Modpack Modpack { get; set; }
+        public BoundModList BoundModList { get; set; }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            if (Modpack == null)
+            if (BoundModList == null)
             {
                 BtnSave.Content = "Create";
                 Title = "Create modpack";
             }
             else
             {
-                TxtName.Text = Modpack.DisplayName;
-                Title = $"Editing {Modpack.DisplayName}";
+                TxtName.Text = BoundModList.DisplayName;
+                Title = $"Editing {BoundModList.DisplayName}";
             }
         }
 
@@ -38,17 +38,17 @@ namespace RimWorldLauncher.Views.Main.Edit
                 return;
             }
 
-            if (Modpack == null)
+            if (BoundModList == null)
             {
-                Modpack = new Modpack(
+                BoundModList = new BoundModList(
                     TxtName.Text,
                     TxtName.Text
                 );
             }
             else
             {
-                Modpack.DisplayName = TxtName.Text;
-                Modpack.Save();
+                BoundModList.DisplayName = TxtName.Text;
+                BoundModList.Save();
             }
 
             DialogResult = true;

@@ -4,7 +4,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
 using System.Windows.Input;
-using RimWorldLauncher.Models;
+using RimWorldLauncher.Classes;
 using RimWorldLauncher.Views.Main.Edit;
 
 namespace RimWorldLauncher.Views.Main
@@ -14,7 +14,7 @@ namespace RimWorldLauncher.Views.Main
     /// </summary>
     public partial class WinModpacks
     {
-        private Modpack _currentModpack;
+        private BoundModList _currentBoundModList;
         private Point? _dragStartPoint;
 
         public WinModpacks()
@@ -24,19 +24,19 @@ namespace RimWorldLauncher.Views.Main
 
         private void RefreshModpacksList()
         {
-            var viewSource = new ListCollectionView(App.Modpacks.List);
+            var viewSource = new ListCollectionView(App.Modpacks.ObservableModpacksList);
             viewSource.Filter += ViewSource_Filter;
             LvModpacks.ItemsSource = viewSource;
         }
 
         private static bool ViewSource_Filter(object modpack)
         {
-            return (modpack as Modpack)?.Identifier != "vanilla";
+            return (modpack as BoundModList)?.Identifier != "vanilla";
         }
 
         private void RefreshInstalledMods()
         {
-            LvInstalledMods.ItemsSource = App.Mods.Mods;
+            LvInstalledMods.ItemsSource = App.Mods.ModsList;
         }
 
         private void SelectMod(ModInfo mod)
@@ -53,9 +53,9 @@ namespace RimWorldLauncher.Views.Main
 
         private void ModpacksList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if ((sender as ListView)?.SelectedItem is Modpack selectedModpack)
+            if ((sender as ListView)?.SelectedItem is BoundModList selectedModpack)
             {
-                LvActivatedMods.ItemsSource = _currentModpack = selectedModpack;
+                LvActivatedMods.ItemsSource = _currentBoundModList = selectedModpack;
                 LvActivatedMods.IsEnabled = true;
             }
             else
@@ -77,32 +77,32 @@ namespace RimWorldLauncher.Views.Main
 
         private void BtnEdit_OnClick(object sender, RoutedEventArgs e)
         {
-            var modpack = (sender as Button)?.DataContext as Modpack;
+            var modpack = (sender as Button)?.DataContext as BoundModList;
             var editWindow = new WinModpackEdit
             {
-                Modpack = modpack
+                BoundModList = modpack
             };
             editWindow.ShowDialog();
         }
 
         private void BtnClone_OnClick(object sender, RoutedEventArgs e)
         {
-            var modpackToClone = (sender as Button)?.DataContext as Modpack;
+            var modpackToClone = (sender as Button)?.DataContext as BoundModList;
             var editWindow = new WinModpackEdit();
             if (!(editWindow.ShowDialog() ?? false)) return;
-            var newModpack = editWindow.Modpack;
+            var newModpack = editWindow.BoundModList;
             newModpack.CopyTo((modpackToClone ?? throw new InvalidOperationException()).Select(mod => mod).ToArray(),
                 0);
-            App.Modpacks.Refresh();
+            App.Modpacks.LoadModpacks();
         }
 
         private void BtnDelete_OnClick(object sender, RoutedEventArgs e)
         {
-            var modpack = (sender as Button)?.DataContext as Modpack;
-            var profiles = App.Profiles.List.Where(profile => profile.Modpack == modpack);
+            var modpack = (sender as Button)?.DataContext as BoundModList;
+            var profiles = App.Profiles.ObservableProfilesList.Where(profile => profile.BoundModList == modpack);
             var message =
                 $"Are you sure you want to delete \"{modpack?.DisplayName}\"?\nMods are not going to be uninstalled.\nThis cannot be undone.";
-            var arrProfiles = profiles as Profile[] ?? profiles.ToArray();
+            var arrProfiles = profiles as BoundProfile[] ?? profiles.ToArray();
             if (arrProfiles.Any())
                 message += "\n\nThis modpack is used by the following profile(s):\n" +
                            string.Join("\n", arrProfiles.Select(profile => profile.DisplayName));
@@ -113,13 +113,13 @@ namespace RimWorldLauncher.Views.Main
                     MessageBoxImage.Warning
                 ) != MessageBoxResult.Yes) return;
             modpack?.Delete();
-            App.Modpacks.Refresh();
+            App.Modpacks.LoadModpacks();
         }
 
         private void BtnCreate_OnClick(object sender, RoutedEventArgs e)
         {
             var editWindow = new WinModpackEdit();
-            if (editWindow.ShowDialog() ?? false) App.Modpacks.Refresh();
+            if (editWindow.ShowDialog() ?? false) App.Modpacks.LoadModpacks();
         }
 
         private void LvInstalledMods_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -175,7 +175,7 @@ namespace RimWorldLauncher.Views.Main
             if (e.Data.GetDataPresent(Properties.Resources.DragModpackReorder))
             {
                 var mod = e.Data.GetData(Properties.Resources.DragModpackReorder) as ModInfo;
-                if (_currentModpack.Contains(mod)) _currentModpack.Remove(mod);
+                if (_currentBoundModList.Contains(mod)) _currentBoundModList.Remove(mod);
             }
         }
 
@@ -184,9 +184,9 @@ namespace RimWorldLauncher.Views.Main
             if (e.Data.GetDataPresent(Properties.Resources.DragModpackActivate))
             {
                 var mod = e.Data.GetData(Properties.Resources.DragModpackActivate) as ModInfo;
-                if (_currentModpack.Contains(mod))
+                if (_currentBoundModList.Contains(mod))
                 {
-                    App.ShowError($"This mod is already part of {_currentModpack.DisplayName}.");
+                    App.ShowError($"This mod is already part of {_currentBoundModList.DisplayName}.");
                     return;
                 }
 
@@ -197,8 +197,8 @@ namespace RimWorldLauncher.Views.Main
                     index = LvActivatedMods.ItemContainerGenerator.IndexFromContainer(targetItem) +
                             (e.GetPosition(targetItem).Y / targetItem.ActualHeight > 0.5 ? 1 : 0);
                 else
-                    index = _currentModpack.Count;
-                _currentModpack.Insert(index, mod);
+                    index = _currentBoundModList.Count;
+                _currentBoundModList.Insert(index, mod);
             }
             else if (e.Data.GetDataPresent(Properties.Resources.DragModpackReorder))
             {
@@ -209,11 +209,11 @@ namespace RimWorldLauncher.Views.Main
                     index = LvActivatedMods.ItemContainerGenerator.IndexFromContainer(targetItem) +
                             (e.GetPosition(targetItem).Y / targetItem.ActualHeight > 0.5 ? 1 : 0);
                 else
-                    index = _currentModpack.Count;
-                var oldIndex = _currentModpack.IndexOf(mod);
+                    index = _currentBoundModList.Count;
+                var oldIndex = _currentBoundModList.IndexOf(mod);
                 if (oldIndex < index) index--;
-                _currentModpack.RemoveAt(oldIndex);
-                _currentModpack.Insert(index, mod);
+                _currentBoundModList.RemoveAt(oldIndex);
+                _currentBoundModList.Insert(index, mod);
             }
         }
 
@@ -223,7 +223,7 @@ namespace RimWorldLauncher.Views.Main
             var selectedMods = list.SelectedItems;
             if (e.Key != Key.Delete) return;
             for (var i = selectedMods.Count - 1; i >= 0; i--)
-                _currentModpack.Remove(selectedMods[i] as ModInfo);
+                _currentBoundModList.Remove(selectedMods[i] as ModInfo);
         }
     }
 }

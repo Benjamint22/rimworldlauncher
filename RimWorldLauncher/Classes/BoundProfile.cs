@@ -7,11 +7,11 @@ using System.Xml.Linq;
 using RimWorldLauncher.Mixins;
 using RimWorldLauncher.Properties;
 
-namespace RimWorldLauncher.Models
+namespace RimWorldLauncher.Classes
 {
-    public class Profile : IMixinXmlConfig, INotifyPropertyChanged
+    public class BoundProfile : IMixinXmlConfig, INotifyPropertyChanged
     {
-        public Profile(string displayName, Modpack modpack, string identifier = null)
+        public BoundProfile(string displayName, BoundModList boundModList, string identifier = null)
         {
             identifier = (identifier ?? displayName).Sanitize();
             ProfileFolder = App.Profiles.Directory.CreateSubdirectory(identifier);
@@ -19,31 +19,31 @@ namespace RimWorldLauncher.Models
             XmlRoot = new XDocument(
                 new XElement("config",
                     new XElement("displayName", displayName),
-                    new XElement("modpack", modpack.Identifier)
+                    new XElement("modpack", boundModList.Identifier)
                 )
             );
             ProfileFolder.CreateSubdirectory(Resources.SavesFolderName);
             this.Save();
         }
 
-        public Profile(DirectoryInfo profileFolder)
+        public BoundProfile(DirectoryInfo profileFolder)
         {
             ProfileFolder = profileFolder;
             Source = profileFolder.GetFiles().First(file => file.Name == Resources.ProfileConfigName);
             this.Load();
         }
 
-        public Modpack Modpack
+        public BoundModList BoundModList
         {
             get
             {
                 var identifier = XmlRoot.Element("config").Element("modpack").Value;
-                return App.Modpacks.List.FirstOrDefault(modpack => modpack.Identifier == identifier);
+                return App.Modpacks.ObservableModpacksList.FirstOrDefault(modpack => modpack.Identifier == identifier);
             }
             set
             {
                 XmlRoot.Element("config").Element("modpack").Value = value.Identifier;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("Modpack"));
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs("BoundModList"));
                 this.Save();
             }
         }
@@ -70,10 +70,10 @@ namespace RimWorldLauncher.Models
 
         public void StartGame()
         {
-            var dataFolder = App.Config.ReadDataFolder();
-            App.ActiveModsConfig.SetActiveMods(Modpack);
+            var dataFolder = App.Config.FetchDataFolder();
+            App.ActiveModsConfig.UpdateActiveMods(BoundModList);
             dataFolder.CreateJunction(Resources.SavesFolderName, SavesFolder, true);
-            Process.Start(Path.Combine(App.Config.ReadGameFolder().FullName, Resources.LauncherName));
+            Process.Start(Path.Combine(App.Config.FetchGameFolder().FullName, Resources.LauncherName));
             Application.Current.Shutdown();
         }
 

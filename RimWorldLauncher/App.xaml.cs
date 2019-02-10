@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using RimWorldLauncher.Models;
+using RimWorldLauncher.Classes;
 using RimWorldLauncher.Services;
 using RimWorldLauncher.Views.Main;
 using RimWorldLauncher.Views.Startup;
@@ -18,15 +18,16 @@ namespace RimWorldLauncher
         public App()
         {
             Instance = this;
-            Config = new LauncherConfig();
+            Config = new ConfigurationService();
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
         }
 
-        public static LauncherConfig Config { get; private set; }
-        public static InstalledMods Mods { get; private set; }
-        public static ModpacksReader Modpacks { get; private set; }
-        public static ProfilesReader Profiles { get; private set; }
-        public static ActiveModsConfigReader ActiveModsConfig { get; private set; }
+        public static ConfigurationService Config { get; private set; }
+        public static ModInstallationService Mods { get; private set; }
+        public static ModpacksService Modpacks { get; private set; }
+        public static ProfilesService Profiles { get; private set; }
+        public static ModActivationService ActiveModsConfig { get; private set; }
+
         // ReSharper disable once MemberCanBePrivate.Global
         public static App Instance { get; private set; }
 
@@ -41,9 +42,7 @@ namespace RimWorldLauncher
             Debug.Assert(newWindow != null, nameof(newWindow) + " != null");
             MainWindow = newWindow;
             if (parentWindow == null)
-            {
                 MainWindow.Closed += MainWindow_Closed;
-            }
             else
                 MainWindow.Closed += (sender, e) => SwitchMainWindow(parentWindow);
             MainWindow.Show();
@@ -51,12 +50,12 @@ namespace RimWorldLauncher
 
         private void OpenMainWindow()
         {
-            Mods = new InstalledMods();
-            Modpacks = new ModpacksReader();
+            Mods = new ModInstallationService();
+            Modpacks = new ModpacksService();
             Modpacks.AddVanillaModpack();
-            ActiveModsConfig = new ActiveModsConfigReader();
-            Profiles = new ProfilesReader();
-            if (!Profiles.IsSymlinked())
+            ActiveModsConfig = new ModActivationService();
+            Profiles = new ProfilesService();
+            if (!ProfilesService.IsSavesFolderSymlinked())
             {
                 if (
                     MessageBox.Show(
@@ -67,16 +66,16 @@ namespace RimWorldLauncher
                     ) == MessageBoxResult.Yes
                 )
                 {
-                    var oldModpack = new Modpack("Old modpack", "old");
-                    oldModpack.CopyTo(ActiveModsConfig.GetActiveMods().ToArray(), 0);
-                    Modpacks.Refresh();
-                    var profile = new Profile("Old profile", oldModpack, "old");
+                    var oldModpack = new BoundModList("Old modpack", "old");
+                    oldModpack.CopyTo(ActiveModsConfig.FetchActiveMods().ToArray(), 0);
+                    Modpacks.LoadModpacks();
+                    var profile = new BoundProfile("Old profile", oldModpack, "old");
                     profile.SavesFolder?.Delete();
-                    Config.ReadDataFolder().GetDirectories().First(directory =>
+                    Config.FetchDataFolder().GetDirectories().First(directory =>
                             directory.Name == RimWorldLauncher.Properties.Resources.SavesFolderName)
                         .MoveTo(Path.Combine(profile.ProfileFolder.FullName,
                             RimWorldLauncher.Properties.Resources.SavesFolderName));
-                    Profiles.Refresh();
+                    Profiles.LoadProfiles();
                 }
                 else
                 {
@@ -90,7 +89,7 @@ namespace RimWorldLauncher
 
         private void App_OnStartup(object sender, StartupEventArgs e)
         {
-            if (Config.ReadGameFolder() != null && Config.ReadDataFolder() != null)
+            if (Config.FetchGameFolder() != null && Config.FetchDataFolder() != null)
             {
                 OpenMainWindow();
             }
