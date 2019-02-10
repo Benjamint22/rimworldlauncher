@@ -22,14 +22,15 @@ namespace RimWorldLauncher
             ShutdownMode = ShutdownMode.OnExplicitShutdown;
         }
 
-        public static ConfigurationService Config { get; private set; }
-        public static ModInstallationService Mods { get; private set; }
-        public static ModpacksService Modpacks { get; private set; }
-        public static ProfilesService Profiles { get; private set; }
         public static ModActivationService ActiveModsConfig { get; private set; }
+
+        public static ConfigurationService Config { get; private set; }
 
         // ReSharper disable once MemberCanBePrivate.Global
         public static App Instance { get; private set; }
+        public static ModpacksService Modpacks { get; private set; }
+        public static ModInstallationService Mods { get; private set; }
+        public static ProfilesService Profiles { get; private set; }
 
         public static void ShowError(string message, string caption = "Error")
         {
@@ -46,6 +47,24 @@ namespace RimWorldLauncher
             else
                 MainWindow.Closed += (sender, e) => SwitchMainWindow(parentWindow);
             MainWindow.Show();
+        }
+
+        private void App_OnStartup(object sender, StartupEventArgs e)
+        {
+            if (Config.FetchGameFolder() != null && Config.FetchDataFolder() != null)
+            {
+                OpenMainWindow();
+            }
+            else
+            {
+                MainWindow = new WinSettings();
+                if (MainWindow.ShowDialog() ?? false) OpenMainWindow();
+            }
+        }
+
+        private void MainWindow_Closed(object sender, EventArgs e)
+        {
+            Shutdown();
         }
 
         private void OpenMainWindow()
@@ -85,24 +104,6 @@ namespace RimWorldLauncher
             }
 
             SwitchMainWindow(new WinMain());
-        }
-
-        private void App_OnStartup(object sender, StartupEventArgs e)
-        {
-            if (Config.FetchGameFolder() != null && Config.FetchDataFolder() != null)
-            {
-                OpenMainWindow();
-            }
-            else
-            {
-                MainWindow = new WinSettings();
-                if (MainWindow.ShowDialog() ?? false) OpenMainWindow();
-            }
-        }
-
-        private void MainWindow_Closed(object sender, EventArgs e)
-        {
-            Shutdown();
         }
     }
 }

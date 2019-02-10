@@ -89,13 +89,14 @@ namespace RimWorldLauncher.Classes
             }
         }
 
-        public string DisplayName { get; }
-        public BitmapImage Preview { get; }
-        public string Identifier { get; }
         public string Author { get; }
+        public string Description { get; }
+
+        public string DisplayName { get; }
+        public string Identifier { get; }
         public string ModVersion { get; }
+        public BitmapImage Preview { get; }
         public string TargetGameVersion { get; }
         public string Url { get; }
-        public string Description { get; }
     }
 }

@@ -34,6 +34,16 @@ namespace RimWorldLauncher.Classes
             this.Load();
         }
 
+        public event NotifyCollectionChangedEventHandler CollectionChanged;
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public FileInfo Source { get; set; }
+        public XDocument XmlRoot { get; set; }
+
+        public int Count => XmlRoot.Element("modpack").Element("mods").Elements().Count();
+
+        public bool IsReadOnly => false;
+
         public string DisplayName
         {
             get => XmlRoot.Element("modpack").Element("displayName").Value;
@@ -60,10 +70,6 @@ namespace RimWorldLauncher.Classes
             }
         }
 
-        public int Count => XmlRoot.Element("modpack").Element("mods").Elements().Count();
-
-        public bool IsReadOnly => false;
-
         public ModInfo this[int index]
         {
             get => App.Mods.ModsList.First(mod =>
@@ -74,11 +80,6 @@ namespace RimWorldLauncher.Classes
         public void Add(ModInfo item)
         {
             CopyTo(new[] {item}, Count);
-        }
-
-        public void Insert(int index, ModInfo item)
-        {
-            CopyTo(new[] {item}, index);
         }
 
         public void Clear()
@@ -119,9 +120,15 @@ namespace RimWorldLauncher.Classes
             this.Save();
         }
 
-        public bool Remove(ModInfo item)
+
+        public void Delete()
         {
-            return Remove(item, null);
+            Source.Delete();
+        }
+
+        public IEnumerator<ModInfo> GetEnumerator()
+        {
+            return new ModpackEnumerator(this);
         }
 
         public int IndexOf(ModInfo item)
@@ -130,40 +137,14 @@ namespace RimWorldLauncher.Classes
                 .FirstIndex(element => element.Value == item.Identifier);
         }
 
-        public void RemoveAt(int index)
+        public void Insert(int index, ModInfo item)
         {
-            var mod = this[index];
-            Remove(mod, index);
+            CopyTo(new[] {item}, index);
         }
 
-        public IEnumerator<ModInfo> GetEnumerator()
+        public bool Remove(ModInfo item)
         {
-            return new ModpackEnumerator(this);
-        }
-
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return new ModpackEnumerator(this);
-        }
-
-        public FileInfo Source { get; set; }
-        public XDocument XmlRoot { get; set; }
-        public event NotifyCollectionChangedEventHandler CollectionChanged;
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        private void Source_Changed(object sender, FileSystemEventArgs e)
-        {
-            Application.Current.Dispatcher.Invoke(delegate
-            {
-                this.Load();
-                CollectionChanged?.Invoke(this,
-                    new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
-            });
-        }
-
-        public void Delete()
-        {
-            Source.Delete();
+            return Remove(item, null);
         }
 
         public bool Remove(ModInfo item, int? index)
@@ -184,6 +165,27 @@ namespace RimWorldLauncher.Classes
             );
             this.Save();
             return true;
+        }
+
+        public void RemoveAt(int index)
+        {
+            var mod = this[index];
+            Remove(mod, index);
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return new ModpackEnumerator(this);
+        }
+
+        private void Source_Changed(object sender, FileSystemEventArgs e)
+        {
+            Application.Current.Dispatcher.Invoke(delegate
+            {
+                this.Load();
+                CollectionChanged?.Invoke(this,
+                    new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+            });
         }
 
         private class ModpackEnumerator : IEnumerator<ModInfo>

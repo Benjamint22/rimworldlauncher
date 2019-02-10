@@ -22,67 +22,9 @@ namespace RimWorldLauncher.Views.Main
             InitializeComponent();
         }
 
-        private void RefreshModpacksList()
-        {
-            var viewSource = new ListCollectionView(App.Modpacks.ObservableModpacksList);
-            viewSource.Filter += ViewSource_Filter;
-            LvModpacks.ItemsSource = viewSource;
-        }
-
         private static bool ViewSource_Filter(object modpack)
         {
             return (modpack as BoundModList)?.Identifier != Properties.Resources.VanillaModpackName;
-        }
-
-        private void RefreshInstalledMods()
-        {
-            LvInstalledMods.ItemsSource = App.Mods.ModsList;
-        }
-
-        private void SelectMod(ModInfo mod)
-        {
-            if (mod == null) return;
-            (FrMod.Content as PgMod)?.SetMod(mod);
-        }
-
-        private void PgModpacks_OnLoaded(object sender, RoutedEventArgs e)
-        {
-            RefreshModpacksList();
-            RefreshInstalledMods();
-        }
-
-        private void ModpacksList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if ((sender as ListView)?.SelectedItem is BoundModList selectedModpack)
-            {
-                LvActivatedMods.ItemsSource = _currentBoundModList = selectedModpack;
-                LvActivatedMods.IsEnabled = true;
-            }
-            else
-            {
-                LvActivatedMods.ItemsSource = null;
-                LvActivatedMods.IsEnabled = false;
-            }
-        }
-
-        private void LvInstalledMods_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            SelectMod((sender as ListView)?.SelectedItem as ModInfo);
-        }
-
-        private void LvActivatedMods_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            SelectMod((sender as ListView)?.SelectedItem as ModInfo);
-        }
-
-        private void BtnEdit_OnClick(object sender, RoutedEventArgs e)
-        {
-            var modpack = (sender as Button)?.DataContext as BoundModList;
-            var editWindow = new WinModpackEdit
-            {
-                BoundModList = modpack
-            };
-            editWindow.ShowDialog();
         }
 
         private void BtnClone_OnClick(object sender, RoutedEventArgs e)
@@ -94,6 +36,12 @@ namespace RimWorldLauncher.Views.Main
             newModpack.CopyTo((modpackToClone ?? throw new InvalidOperationException()).Select(mod => mod).ToArray(),
                 0);
             App.Modpacks.LoadModpacks();
+        }
+
+        private void BtnCreate_OnClick(object sender, RoutedEventArgs e)
+        {
+            var editWindow = new WinModpackEdit();
+            if (editWindow.ShowDialog() ?? false) App.Modpacks.LoadModpacks();
         }
 
         private void BtnDelete_OnClick(object sender, RoutedEventArgs e)
@@ -113,59 +61,21 @@ namespace RimWorldLauncher.Views.Main
                     MessageBoxImage.Warning
                 ) != MessageBoxResult.Yes) return;
             foreach (var profile in arrProfiles)
-            {
                 profile.BoundModList =
-                    App.Modpacks.ObservableModpacksList.First(modlist => modlist.Identifier == Properties.Resources.VanillaModpackName);
-            }
+                    App.Modpacks.ObservableModpacksList.First(modlist =>
+                        modlist.Identifier == Properties.Resources.VanillaModpackName);
             modpack?.Delete();
             App.Modpacks.LoadModpacks();
         }
 
-        private void BtnCreate_OnClick(object sender, RoutedEventArgs e)
+        private void BtnEdit_OnClick(object sender, RoutedEventArgs e)
         {
-            var editWindow = new WinModpackEdit();
-            if (editWindow.ShowDialog() ?? false) App.Modpacks.LoadModpacks();
-        }
-
-        private void LvInstalledMods_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            _dragStartPoint = e.GetPosition(null);
-        }
-
-        private void LvActivatedMods_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            _dragStartPoint = e.GetPosition(null);
-        }
-
-        private void LvInstalledMods_MouseMove(object sender, MouseEventArgs e)
-        {
-            LvMods_MouseMove(sender, e, Properties.Resources.DragModpackActivate, DragDropEffects.Link);
-        }
-
-        private void LvActivatedMods_MouseMove(object sender, MouseEventArgs e)
-        {
-            LvMods_MouseMove(sender, e, Properties.Resources.DragModpackReorder, DragDropEffects.Move);
-        }
-
-        private void LvMods_MouseMove(object sender, MouseEventArgs e, string dataObjectFormat, DragDropEffects effect)
-        {
-            if (_dragStartPoint == null || e.LeftButton != MouseButtonState.Pressed) return;
-            var diff = e.GetPosition(null) - _dragStartPoint ?? throw new InvalidOperationException();
-            if (Math.Abs(diff.X) <= SystemParameters.MinimumHorizontalDragDistance &&
-                Math.Abs(diff.Y) <= SystemParameters.MinimumVerticalDragDistance)
-                return;
-            _dragStartPoint = null;
-            var sourceItem = (e.OriginalSource as DependencyObject).FindAncestor<ListViewItem>();
-            var sourceView = sourceItem.FindAncestor<ListView>();
-            if (sourceItem == null || sourceView != sender) return;
-            var mod = sourceView.ItemContainerGenerator.ItemFromContainer(sourceItem) as ModInfo;
-            var dragData = new DataObject(dataObjectFormat, mod);
-            DragDrop.DoDragDrop(sourceItem, dragData, effect);
-        }
-
-        private void LvInstalledMods_DragEnter(object sender, DragEventArgs e)
-        {
-            if (!e.Data.GetDataPresent(Properties.Resources.DragModpackReorder)) e.Effects = DragDropEffects.None;
+            var modpack = (sender as Button)?.DataContext as BoundModList;
+            var editWindow = new WinModpackEdit
+            {
+                BoundModList = modpack
+            };
+            editWindow.ShowDialog();
         }
 
         private void LvActivatedMods_DragEnter(object sender, DragEventArgs e)
@@ -173,15 +83,6 @@ namespace RimWorldLauncher.Views.Main
             if (!e.Data.GetDataPresent(Properties.Resources.DragModpackActivate) &&
                 !e.Data.GetDataPresent(Properties.Resources.DragModpackReorder))
                 e.Effects = DragDropEffects.None;
-        }
-
-        private void LvInstalledMods_Drop(object sender, DragEventArgs e)
-        {
-            if (e.Data.GetDataPresent(Properties.Resources.DragModpackReorder))
-            {
-                var mod = e.Data.GetData(Properties.Resources.DragModpackReorder) as ModInfo;
-                if (_currentBoundModList.Contains(mod)) _currentBoundModList.Remove(mod);
-            }
         }
 
         private void LvActivatedMods_Drop(object sender, DragEventArgs e)
@@ -229,6 +130,104 @@ namespace RimWorldLauncher.Views.Main
             if (e.Key != Key.Delete) return;
             for (var i = selectedMods.Count - 1; i >= 0; i--)
                 _currentBoundModList.Remove(selectedMods[i] as ModInfo);
+        }
+
+        private void LvActivatedMods_MouseMove(object sender, MouseEventArgs e)
+        {
+            LvMods_MouseMove(sender, e, Properties.Resources.DragModpackReorder, DragDropEffects.Move);
+        }
+
+        private void LvActivatedMods_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            _dragStartPoint = e.GetPosition(null);
+        }
+
+        private void LvActivatedMods_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            SelectMod((sender as ListView)?.SelectedItem as ModInfo);
+        }
+
+        private void LvInstalledMods_DragEnter(object sender, DragEventArgs e)
+        {
+            if (!e.Data.GetDataPresent(Properties.Resources.DragModpackReorder)) e.Effects = DragDropEffects.None;
+        }
+
+        private void LvInstalledMods_Drop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(Properties.Resources.DragModpackReorder))
+            {
+                var mod = e.Data.GetData(Properties.Resources.DragModpackReorder) as ModInfo;
+                if (_currentBoundModList.Contains(mod)) _currentBoundModList.Remove(mod);
+            }
+        }
+
+        private void LvInstalledMods_MouseMove(object sender, MouseEventArgs e)
+        {
+            LvMods_MouseMove(sender, e, Properties.Resources.DragModpackActivate, DragDropEffects.Link);
+        }
+
+        private void LvInstalledMods_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            _dragStartPoint = e.GetPosition(null);
+        }
+
+        private void LvInstalledMods_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            SelectMod((sender as ListView)?.SelectedItem as ModInfo);
+        }
+
+        private void LvMods_MouseMove(object sender, MouseEventArgs e, string dataObjectFormat, DragDropEffects effect)
+        {
+            if (_dragStartPoint == null || e.LeftButton != MouseButtonState.Pressed) return;
+            var diff = e.GetPosition(null) - _dragStartPoint ?? throw new InvalidOperationException();
+            if (Math.Abs(diff.X) <= SystemParameters.MinimumHorizontalDragDistance &&
+                Math.Abs(diff.Y) <= SystemParameters.MinimumVerticalDragDistance)
+                return;
+            _dragStartPoint = null;
+            var sourceItem = (e.OriginalSource as DependencyObject).FindAncestor<ListViewItem>();
+            var sourceView = sourceItem.FindAncestor<ListView>();
+            if (sourceItem == null || sourceView != sender) return;
+            var mod = sourceView.ItemContainerGenerator.ItemFromContainer(sourceItem) as ModInfo;
+            var dragData = new DataObject(dataObjectFormat, mod);
+            DragDrop.DoDragDrop(sourceItem, dragData, effect);
+        }
+
+        private void ModpacksList_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if ((sender as ListView)?.SelectedItem is BoundModList selectedModpack)
+            {
+                LvActivatedMods.ItemsSource = _currentBoundModList = selectedModpack;
+                LvActivatedMods.IsEnabled = true;
+            }
+            else
+            {
+                LvActivatedMods.ItemsSource = null;
+                LvActivatedMods.IsEnabled = false;
+            }
+        }
+
+        private void PgModpacks_OnLoaded(object sender, RoutedEventArgs e)
+        {
+            RefreshModpacksList();
+            RefreshInstalledMods();
+        }
+
+        private void RefreshInstalledMods()
+        {
+            LvInstalledMods.ItemsSource = App.Mods.ModsList;
+        }
+
+        private void RefreshModpacksList()
+        {
+            var viewSource = new ListCollectionView(App.Modpacks.ObservableModpacksList);
+            viewSource.Filter += ViewSource_Filter;
+            LvModpacks.ItemsSource = viewSource;
+        }
+
+        private void SelectMod(ModInfo mod)
+        {
+            if (mod == null) return;
+            (FrMod.Content as PgMod)?.SetMod(mod);
         }
     }
 }

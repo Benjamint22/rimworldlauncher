@@ -16,9 +16,17 @@ namespace RimWorldLauncher.Services
             LoadModpacks();
         }
 
+        public DirectoryInfo Directory { get; }
+
         public ObservableCollection<BoundModList> ObservableModpacksList { get; set; }
 
-        public DirectoryInfo Directory { get; }
+        public void AddVanillaModpack()
+        {
+            if (ObservableModpacksList.Any(modpack => modpack.Identifier == Resources.VanillaModpackName)) return;
+            // ReSharper disable once ObjectCreationAsStatement
+            new BoundModList("Vanilla (default)", Resources.VanillaModpackName);
+            LoadModpacks();
+        }
 
         public void LoadModpacks()
         {
@@ -27,14 +35,6 @@ namespace RimWorldLauncher.Services
             else
                 ObservableModpacksList.Clear();
             foreach (var file in Directory.GetFiles()) ObservableModpacksList.Add(new BoundModList(file));
-        }
-
-        public void AddVanillaModpack()
-        {
-            if (ObservableModpacksList.Any(modpack => modpack.Identifier == Resources.VanillaModpackName)) return;
-            // ReSharper disable once ObjectCreationAsStatement
-            new BoundModList("Vanilla (default)", Resources.VanillaModpackName);
-            LoadModpacks();
         }
     }
 }

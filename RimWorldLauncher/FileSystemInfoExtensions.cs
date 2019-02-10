@@ -29,80 +29,73 @@ namespace RimWorldLauncher
         private static readonly Dictionary<string, FileSystemWatcher> FileWatchers =
             new Dictionary<string, FileSystemWatcher>();
 
-        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
-        private static extern bool DeviceIoControl(IntPtr hDevice, uint dwIoControlCode,
-            IntPtr inBuffer, int nInBufferSize,
-            IntPtr outBuffer, int nOutBufferSize,
-            out int pBytesReturned, IntPtr lpOverlapped);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern IntPtr CreateFile(
-            string lpFileName,
-            EFileAccess dwDesiredAccess,
-            EFileShare dwShareMode,
-            IntPtr lpSecurityAttributes,
-            ECreationDisposition dwCreationDisposition,
-            EFileAttributes dwFlagsAndAttributes,
-            IntPtr hTemplateFile);
-
-        public static DirectoryInfo FromPath(string path)
+        private enum ECreationDisposition : uint
         {
-            path = Environment.ExpandEnvironmentVariables(path);
-            if (string.IsNullOrEmpty(path)) return null;
-            DirectoryInfo directoryInfo;
-            try
-            {
-                directoryInfo = new DirectoryInfo(path);
-            }
-            catch (Exception)
-            {
-                return null;
-            }
+            // ReSharper disable UnusedMember.Local
+            New = 1,
+            CreateAlways = 2,
+            OpenExisting = 3,
+            OpenAlways = 4,
 
-            return directoryInfo;
+            TruncateExisting = 5
+            // ReSharper restore UnusedMember.Local
         }
 
-        /// <summary>
-        ///     Starts watching <paramref name="file" /> for change in its content.
-        /// </summary>
-        /// <param name="file">The file to watch.</param>
-        /// <param name="onChanged">The event to run when <paramref name="file" /> is changed.</param>
-        /// <returns>A FileSystemWatcher that can be used to control the execution of <paramref name="onChanged" />.</returns>
-        public static FileSystemWatcher Watch(this FileInfo file, FileSystemEventHandler onChanged)
+        [Flags]
+        private enum EFileAccess : uint
         {
-            FileSystemWatcher watcher;
-            if (FileWatchers.ContainsKey(file.FullName))
-                watcher = file.GetWatcher();
-            else
-                FileWatchers[file.FullName] = watcher = new FileSystemWatcher
-                {
-                    Path = file.DirectoryName,
-                    Filter = file.Name,
-                    NotifyFilter = NotifyFilters.LastWrite,
-                    EnableRaisingEvents = true
-                };
-            watcher.Changed += onChanged;
-            return watcher;
+            // ReSharper disable UnusedMember.Local
+            GenericRead = 0x80000000,
+            GenericWrite = 0x40000000,
+            GenericExecute = 0x20000000,
+
+            GenericAll = 0x10000000
+            // ReSharper restore UnusedMember.Local
         }
 
-        /// <summary>
-        ///     Obtains the FileSystemWatcher of <paramref name="file" /> or null.
-        /// </summary>
-        /// <param name="file">The file to obtain the watcher for.</param>
-        /// <returns>The watcher of <paramref name="file" /> or null.</returns>
-        public static FileSystemWatcher GetWatcher(this FileInfo file)
+        [Flags]
+        private enum EFileAttributes : uint
         {
-            return FileWatchers.ContainsKey(file.FullName) ? FileWatchers[file.FullName] : null;
+            // ReSharper disable UnusedMember.Local
+            Readonly = 0x00000001,
+            Hidden = 0x00000002,
+            System = 0x00000004,
+            Directory = 0x00000010,
+            Archive = 0x00000020,
+            Device = 0x00000040,
+            Normal = 0x00000080,
+            Temporary = 0x00000100,
+            SparseFile = 0x00000200,
+            ReparsePoint = 0x00000400,
+            Compressed = 0x00000800,
+            Offline = 0x00001000,
+            NotContentIndexed = 0x00002000,
+            Encrypted = 0x00004000,
+            WriteThrough = 0x80000000,
+            Overlapped = 0x40000000,
+            NoBuffering = 0x20000000,
+            RandomAccess = 0x10000000,
+            SequentialScan = 0x08000000,
+            DeleteOnClose = 0x04000000,
+            BackupSemantics = 0x02000000,
+            PosixSemantics = 0x01000000,
+            OpenReparsePoint = 0x00200000,
+            OpenNoRecall = 0x00100000,
+
+            FirstPipeInstance = 0x00080000
+            // ReSharper restore UnusedMember.Local
         }
 
-        /// <summary>
-        ///     Checks if <paramref name="info" /> is a symbolic link or a directory junction.
-        /// </summary>
-        /// <param name="info">The file or directory to check.</param>
-        /// <returns>true if<paramref name="info" /> is a symbolic link or a directory junction.</returns>
-        public static bool IsSymlink(this FileSystemInfo info)
+        [Flags]
+        private enum EFileShare : uint
         {
-            return info.Attributes.HasFlag(FileAttributes.ReparsePoint);
+            // ReSharper disable UnusedMember.Local
+            None = 0x00000000,
+            Read = 0x00000001,
+            Write = 0x00000002,
+
+            Delete = 0x00000004
+            // ReSharper restore UnusedMember.Local
         }
 
         /// <summary>
@@ -175,6 +168,82 @@ namespace RimWorldLauncher
             return junctionPoint;
         }
 
+        public static DirectoryInfo FromPath(string path)
+        {
+            path = Environment.ExpandEnvironmentVariables(path);
+            if (string.IsNullOrEmpty(path)) return null;
+            DirectoryInfo directoryInfo;
+            try
+            {
+                directoryInfo = new DirectoryInfo(path);
+            }
+            catch (Exception)
+            {
+                return null;
+            }
+
+            return directoryInfo;
+        }
+
+        /// <summary>
+        ///     Obtains the FileSystemWatcher of <paramref name="file" /> or null.
+        /// </summary>
+        /// <param name="file">The file to obtain the watcher for.</param>
+        /// <returns>The watcher of <paramref name="file" /> or null.</returns>
+        public static FileSystemWatcher GetWatcher(this FileInfo file)
+        {
+            return FileWatchers.ContainsKey(file.FullName) ? FileWatchers[file.FullName] : null;
+        }
+
+        /// <summary>
+        ///     Checks if <paramref name="info" /> is a symbolic link or a directory junction.
+        /// </summary>
+        /// <param name="info">The file or directory to check.</param>
+        /// <returns>true if<paramref name="info" /> is a symbolic link or a directory junction.</returns>
+        public static bool IsSymlink(this FileSystemInfo info)
+        {
+            return info.Attributes.HasFlag(FileAttributes.ReparsePoint);
+        }
+
+        /// <summary>
+        ///     Starts watching <paramref name="file" /> for change in its content.
+        /// </summary>
+        /// <param name="file">The file to watch.</param>
+        /// <param name="onChanged">The event to run when <paramref name="file" /> is changed.</param>
+        /// <returns>A FileSystemWatcher that can be used to control the execution of <paramref name="onChanged" />.</returns>
+        public static FileSystemWatcher Watch(this FileInfo file, FileSystemEventHandler onChanged)
+        {
+            FileSystemWatcher watcher;
+            if (FileWatchers.ContainsKey(file.FullName))
+                watcher = file.GetWatcher();
+            else
+                FileWatchers[file.FullName] = watcher = new FileSystemWatcher
+                {
+                    Path = file.DirectoryName,
+                    Filter = file.Name,
+                    NotifyFilter = NotifyFilters.LastWrite,
+                    EnableRaisingEvents = true
+                };
+            watcher.Changed += onChanged;
+            return watcher;
+        }
+
+        [DllImport("kernel32.dll", SetLastError = true)]
+        private static extern IntPtr CreateFile(
+            string lpFileName,
+            EFileAccess dwDesiredAccess,
+            EFileShare dwShareMode,
+            IntPtr lpSecurityAttributes,
+            ECreationDisposition dwCreationDisposition,
+            EFileAttributes dwFlagsAndAttributes,
+            IntPtr hTemplateFile);
+
+        [DllImport("kernel32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        private static extern bool DeviceIoControl(IntPtr hDevice, uint dwIoControlCode,
+            IntPtr inBuffer, int nInBufferSize,
+            IntPtr outBuffer, int nOutBufferSize,
+            out int pBytesReturned, IntPtr lpOverlapped);
+
         private static SafeFileHandle OpenReparsePoint(string reparsePoint, EFileAccess accessMode)
         {
             var reparsePointHandle = new SafeFileHandle(CreateFile(reparsePoint, accessMode,
@@ -188,82 +257,32 @@ namespace RimWorldLauncher
             return reparsePointHandle;
         }
 
-        [Flags]
-        private enum EFileAccess : uint
-        {
-            // ReSharper disable UnusedMember.Local
-            GenericRead = 0x80000000,
-            GenericWrite = 0x40000000,
-            GenericExecute = 0x20000000,
-
-            GenericAll = 0x10000000
-            // ReSharper restore UnusedMember.Local
-        }
-
-        [Flags]
-        private enum EFileShare : uint
-        {
-            // ReSharper disable UnusedMember.Local
-            None = 0x00000000,
-            Read = 0x00000001,
-            Write = 0x00000002,
-
-            Delete = 0x00000004
-            // ReSharper restore UnusedMember.Local
-        }
-
-        private enum ECreationDisposition : uint
-        {
-            // ReSharper disable UnusedMember.Local
-            New = 1,
-            CreateAlways = 2,
-            OpenExisting = 3,
-            OpenAlways = 4,
-
-            TruncateExisting = 5
-            // ReSharper restore UnusedMember.Local
-        }
-
-        [Flags]
-        private enum EFileAttributes : uint
-        {
-            // ReSharper disable UnusedMember.Local
-            Readonly = 0x00000001,
-            Hidden = 0x00000002,
-            System = 0x00000004,
-            Directory = 0x00000010,
-            Archive = 0x00000020,
-            Device = 0x00000040,
-            Normal = 0x00000080,
-            Temporary = 0x00000100,
-            SparseFile = 0x00000200,
-            ReparsePoint = 0x00000400,
-            Compressed = 0x00000800,
-            Offline = 0x00001000,
-            NotContentIndexed = 0x00002000,
-            Encrypted = 0x00004000,
-            WriteThrough = 0x80000000,
-            Overlapped = 0x40000000,
-            NoBuffering = 0x20000000,
-            RandomAccess = 0x10000000,
-            SequentialScan = 0x08000000,
-            DeleteOnClose = 0x04000000,
-            BackupSemantics = 0x02000000,
-            PosixSemantics = 0x01000000,
-            OpenReparsePoint = 0x00200000,
-            OpenNoRecall = 0x00100000,
-
-            FirstPipeInstance = 0x00080000
-            // ReSharper restore UnusedMember.Local
-        }
-
         [StructLayout(LayoutKind.Sequential)]
         private struct ReparseDataBuffer
         {
             /// <summary>
-            ///     Reparse point tag. Must be a Microsoft reparse point tag.
+            ///     Reserved; do not use.
             /// </summary>
-            public uint ReparseTag;
+            // ReSharper disable once MemberCanBePrivate.Local
+            public readonly ushort Reserved;
+
+            /// <summary>
+            ///     A buffer containing the unicode-encoded path string. The path string contains
+            ///     the substitute name string and print name string.
+            /// </summary>
+            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x3FF0)]
+            public byte[] PathBuffer;
+
+            /// <summary>
+            ///     Length, in bytes, of the print name string. If this string is null-terminated,
+            ///     PrintNameLength does not include space for the null character.
+            /// </summary>
+            public ushort PrintNameLength;
+
+            /// <summary>
+            ///     Offset, in bytes, of the print name string in the PathBuffer array.
+            /// </summary>
+            public ushort PrintNameOffset;
 
             /// <summary>
             ///     Size, in bytes, of the data after the Reserved member. This can be calculated by:
@@ -273,15 +292,9 @@ namespace RimWorldLauncher
             public ushort ReparseDataLength;
 
             /// <summary>
-            ///     Reserved; do not use.
+            ///     Reparse point tag. Must be a Microsoft reparse point tag.
             /// </summary>
-            // ReSharper disable once MemberCanBePrivate.Local
-            public readonly ushort Reserved;
-
-            /// <summary>
-            ///     Offset, in bytes, of the substitute name string in the PathBuffer array.
-            /// </summary>
-            public ushort SubstituteNameOffset;
+            public uint ReparseTag;
 
             /// <summary>
             ///     Length, in bytes, of the substitute name string. If this string is null-terminated,
@@ -290,22 +303,9 @@ namespace RimWorldLauncher
             public ushort SubstituteNameLength;
 
             /// <summary>
-            ///     Offset, in bytes, of the print name string in the PathBuffer array.
+            ///     Offset, in bytes, of the substitute name string in the PathBuffer array.
             /// </summary>
-            public ushort PrintNameOffset;
-
-            /// <summary>
-            ///     Length, in bytes, of the print name string. If this string is null-terminated,
-            ///     PrintNameLength does not include space for the null character.
-            /// </summary>
-            public ushort PrintNameLength;
-
-            /// <summary>
-            ///     A buffer containing the unicode-encoded path string. The path string contains
-            ///     the substitute name string and print name string.
-            /// </summary>
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 0x3FF0)]
-            public byte[] PathBuffer;
+            public ushort SubstituteNameOffset;
         }
     }
 }

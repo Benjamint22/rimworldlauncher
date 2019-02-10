@@ -66,25 +66,17 @@ namespace RimWorldLauncher.Services
         public FileInfo Source { get; set; }
         public XDocument XmlRoot { get; set; }
 
-        public DirectoryInfo FetchGameFolder()
-        {
-            return FileSystemInfoExtensions.FromPath(
-                XmlRoot.Element("configuration")?.Element("gameFolder")?.Value
-            );
-        }
-
-        public void UpdateGameFolder(GameDirectory directory)
-        {
-            // ReSharper disable PossibleNullReferenceException
-            XmlRoot.Element("configuration").Element("gameFolder").Value = directory.Directory.FullName;
-            // ReSharper restore PossibleNullReferenceException
-            this.Save();
-        }
-
         public DirectoryInfo FetchDataFolder()
         {
             return FileSystemInfoExtensions.FromPath(
                 XmlRoot?.Element("configuration")?.Element("dataFolder")?.Value
+            );
+        }
+
+        public DirectoryInfo FetchGameFolder()
+        {
+            return FileSystemInfoExtensions.FromPath(
+                XmlRoot.Element("configuration")?.Element("gameFolder")?.Value
             );
         }
 
@@ -96,10 +88,12 @@ namespace RimWorldLauncher.Services
             this.Save();
         }
 
-        private void LoadConfig(FileInfo config)
+        public void UpdateGameFolder(GameDirectory directory)
         {
-            Source = config;
-            this.Load();
+            // ReSharper disable PossibleNullReferenceException
+            XmlRoot.Element("configuration").Element("gameFolder").Value = directory.Directory.FullName;
+            // ReSharper restore PossibleNullReferenceException
+            this.Save();
         }
 
         private void InitializeConfig(FileInfo config)
@@ -118,7 +112,14 @@ namespace RimWorldLauncher.Services
             catch (InvalidConfigDirectoryException)
             {
             }
+
             this.Save();
+        }
+
+        private void LoadConfig(FileInfo config)
+        {
+            Source = config;
+            this.Load();
         }
     }
 }

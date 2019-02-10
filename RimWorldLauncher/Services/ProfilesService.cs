@@ -16,9 +16,9 @@ namespace RimWorldLauncher.Services
             LoadProfiles();
         }
 
-        public ObservableCollection<BoundProfile> ObservableProfilesList { get; set; }
-
         public DirectoryInfo Directory { get; }
+
+        public ObservableCollection<BoundProfile> ObservableProfilesList { get; set; }
 
         public static bool IsSavesFolderSymlinked()
         {
@@ -32,7 +32,8 @@ namespace RimWorldLauncher.Services
                 ObservableProfilesList = new ObservableCollection<BoundProfile>();
             else
                 ObservableProfilesList.Clear();
-            foreach (var directory in Directory.GetDirectories()) ObservableProfilesList.Add(new BoundProfile(directory));
+            foreach (var directory in Directory.GetDirectories())
+                ObservableProfilesList.Add(new BoundProfile(directory));
         }
     }
 }

@@ -33,6 +33,16 @@ namespace RimWorldLauncher.Classes
             this.Load();
         }
 
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public DirectoryInfo ProfileFolder { get; set; }
+
+        public FileInfo Source { get; set; }
+        public XDocument XmlRoot { get; set; }
+
+        public DirectoryInfo SavesFolder => ProfileFolder.GetDirectories()
+            .First(directory => directory.Name == Resources.SavesFolderName);
+
         public BoundModList BoundModList
         {
             get
@@ -59,14 +69,10 @@ namespace RimWorldLauncher.Classes
             }
         }
 
-        public DirectoryInfo ProfileFolder { get; set; }
-
-        public DirectoryInfo SavesFolder => ProfileFolder.GetDirectories()
-            .First(directory => directory.Name == Resources.SavesFolderName);
-
-        public FileInfo Source { get; set; }
-        public XDocument XmlRoot { get; set; }
-        public event PropertyChangedEventHandler PropertyChanged;
+        public void Delete()
+        {
+            ProfileFolder.Delete(true);
+        }
 
         public void StartGame()
         {
@@ -75,11 +81,6 @@ namespace RimWorldLauncher.Classes
             dataFolder.CreateJunction(Resources.SavesFolderName, SavesFolder, true);
             Process.Start(Path.Combine(App.Config.FetchGameFolder().FullName, Resources.LauncherName));
             Application.Current.Shutdown();
-        }
-
-        public void Delete()
-        {
-            ProfileFolder.Delete(true);
         }
     }
 }

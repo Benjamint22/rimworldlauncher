@@ -19,41 +19,10 @@ namespace RimWorldLauncher.Views.Main
             InitializeComponent();
         }
 
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
-            LvProfiles.ItemsSource = App.Profiles.ObservableProfilesList;
-        }
-
-        private void LvProfiles_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            _selectedBoundProfile = (sender as ListView)?.SelectedItem as BoundProfile;
-            BtnPlay.IsEnabled = _selectedBoundProfile != null;
-        }
-
         private void BtnCreate_OnClick(object sender, RoutedEventArgs e)
         {
             var editWindow = new WinProfileEdit();
             if (editWindow.ShowDialog() ?? false) App.Profiles.LoadProfiles();
-        }
-
-        private void BtnModpacks_OnClick(object sender, RoutedEventArgs e)
-        {
-            new WinModpacks().ShowDialog();
-        }
-
-        private void BtnPlay_OnClick(object sender, RoutedEventArgs e)
-        {
-            _selectedBoundProfile?.StartGame();
-        }
-
-        private void BtnEdit_OnClick(object sender, RoutedEventArgs e)
-        {
-            var profile = (sender as Button)?.DataContext as BoundProfile;
-            var editWindow = new WinProfileEdit
-            {
-                BoundProfile = profile
-            };
-            editWindow.ShowDialog();
         }
 
         private void BtnDelete_OnClick(object sender, RoutedEventArgs e)
@@ -70,9 +39,40 @@ namespace RimWorldLauncher.Views.Main
             App.Profiles.LoadProfiles();
         }
 
+        private void BtnEdit_OnClick(object sender, RoutedEventArgs e)
+        {
+            var profile = (sender as Button)?.DataContext as BoundProfile;
+            var editWindow = new WinProfileEdit
+            {
+                BoundProfile = profile
+            };
+            editWindow.ShowDialog();
+        }
+
+        private void BtnModpacks_OnClick(object sender, RoutedEventArgs e)
+        {
+            new WinModpacks().ShowDialog();
+        }
+
+        private void BtnPlay_OnClick(object sender, RoutedEventArgs e)
+        {
+            _selectedBoundProfile?.StartGame();
+        }
+
+        private void LvProfiles_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            _selectedBoundProfile = (sender as ListView)?.SelectedItem as BoundProfile;
+            BtnPlay.IsEnabled = _selectedBoundProfile != null;
+        }
+
         private void SettingsMenuItem_OnClick(object sender, RoutedEventArgs e)
         {
             new WinSettings().ShowDialog();
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            LvProfiles.ItemsSource = App.Profiles.ObservableProfilesList;
         }
     }
 }

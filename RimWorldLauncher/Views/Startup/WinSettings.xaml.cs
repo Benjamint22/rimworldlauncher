@@ -1,6 +1,5 @@
 ﻿using System.Windows;
 using System.Windows.Forms;
-using RimWorldLauncher.Mixins;
 using RimWorldLauncher.Services;
 
 namespace RimWorldLauncher.Views.Startup
@@ -17,10 +16,12 @@ namespace RimWorldLauncher.Views.Startup
             InitializeComponent();
         }
 
-        private void WinSettings_OnLoaded(object sender, RoutedEventArgs e)
+        private void BrowseDataFolder_Click(object sender, RoutedEventArgs e)
         {
-            TxtGameFolder.Text = App.Config.FetchGameFolder()?.FullName ?? "";
-            TxtDataFolder.Text = App.Config.FetchDataFolder()?.FullName ?? "";
+            FolderBrowser.Description = $@"The folder containing the {Properties.Resources.SavesFolderName} folder.";
+            FolderBrowser.SelectedPath = TxtDataFolder.Text;
+            if (FolderBrowser.ShowDialog() == System.Windows.Forms.DialogResult.OK)
+                TxtDataFolder.Text = FolderBrowser.SelectedPath;
         }
 
         private void BrowseGameFolder_Click(object sender, RoutedEventArgs e)
@@ -31,17 +32,14 @@ namespace RimWorldLauncher.Views.Startup
                 TxtGameFolder.Text = FolderBrowser.SelectedPath;
         }
 
-        private void BrowseDataFolder_Click(object sender, RoutedEventArgs e)
+        private void BtnResetDataFolder_OnClick(object sender, RoutedEventArgs e)
         {
-            FolderBrowser.Description = $@"The folder containing the {Properties.Resources.SavesFolderName} folder.";
-            FolderBrowser.SelectedPath = TxtDataFolder.Text;
-            if (FolderBrowser.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                TxtDataFolder.Text = FolderBrowser.SelectedPath;
+            TxtDataFolder.Text = App.Config.FetchDataFolder().FullName;
         }
 
-        private void Exit_Click(object sender, RoutedEventArgs e)
+        private void BtnResetGameFolder_OnClick(object sender, RoutedEventArgs e)
         {
-            DialogResult = false;
+            TxtGameFolder.Text = App.Config.FetchGameFolder().FullName;
         }
 
         private void Confirm_Click(object sender, RoutedEventArgs e)
@@ -69,17 +67,19 @@ namespace RimWorldLauncher.Views.Startup
                     $"The data folder is not valid.\nIt must be the folder containing {Properties.Resources.SavesFolderName} folder.");
                 return;
             }
+
             DialogResult = true;
         }
 
-        private void BtnResetGameFolder_OnClick(object sender, RoutedEventArgs e)
+        private void Exit_Click(object sender, RoutedEventArgs e)
         {
-            TxtGameFolder.Text = App.Config.FetchGameFolder().FullName;
+            DialogResult = false;
         }
 
-        private void BtnResetDataFolder_OnClick(object sender, RoutedEventArgs e)
+        private void WinSettings_OnLoaded(object sender, RoutedEventArgs e)
         {
-            TxtDataFolder.Text = App.Config.FetchDataFolder().FullName;
+            TxtGameFolder.Text = App.Config.FetchGameFolder()?.FullName ?? "";
+            TxtDataFolder.Text = App.Config.FetchDataFolder()?.FullName ?? "";
         }
     }
 }
