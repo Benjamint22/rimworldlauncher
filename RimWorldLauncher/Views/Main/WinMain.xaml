@@ -6,7 +6,10 @@
         xmlns:models="clr-namespace:RimWorldLauncher.Models"
         mc:Ignorable="d"
         Loaded="Window_Loaded"
-        Title="MainWindow" Width="800" Height="600" WindowStartupLocation="CenterScreen">
+        Title="MainWindow"
+        Width="400" MinWidth="400"
+        Height="400" MinHeight="250"
+        WindowStartupLocation="CenterScreen">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="1*" />
@@ -30,11 +33,11 @@
                 ItemsSource="{Binding}"
                 SelectionMode="Single"
                 SelectionChanged="LvProfiles_SelectionChanged"
-                HorizontalContentAlignment="Center"
+                HorizontalContentAlignment="Stretch"
                 Grid.Row="1">
                 <ListView.ItemTemplate>
                     <DataTemplate DataType="models:Profile">
-                        <DockPanel Width="{Binding ElementName=LvProfiles,Path=ActualWidth}" MaxWidth="256">
+                        <DockPanel>
                             <StackPanel DockPanel.Dock="Left" HorizontalAlignment="Left">
                                 <Label Content="{Binding DisplayName}" HorizontalAlignment="Left" Margin="0"
                                        FontSize="14" />
