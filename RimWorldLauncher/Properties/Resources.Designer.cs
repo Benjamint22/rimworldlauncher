@@ -150,5 +150,14 @@ namespace RimWorldLauncher.Properties {
                 return ResourceManager.GetString("SavesFolderName", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to vanilla.
+        /// </summary>
+        internal static string VanillaModpackName {
+            get {
+                return ResourceManager.GetString("VanillaModpackName", resourceCulture);
+            }
+        }
     }
 }

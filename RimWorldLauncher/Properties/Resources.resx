@@ -148,4 +148,7 @@
   <data name="DragModpackActivate" xml:space="preserve">
     <value>RimworldMod_Activate</value>
   </data>
+  <data name="VanillaModpackName" xml:space="preserve">
+    <value>vanilla</value>
+  </data>
 </root>

@@ -31,9 +31,9 @@ namespace RimWorldLauncher.Services
 
         public void AddVanillaModpack()
         {
-            if (ObservableModpacksList.Any(modpack => modpack.Identifier == "vanilla")) return;
+            if (ObservableModpacksList.Any(modpack => modpack.Identifier == Resources.VanillaModpackName)) return;
             // ReSharper disable once ObjectCreationAsStatement
-            new BoundModList("Vanilla (default)", "vanilla");
+            new BoundModList("Vanilla (default)", Resources.VanillaModpackName);
             LoadModpacks();
         }
     }

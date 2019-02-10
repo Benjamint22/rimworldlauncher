@@ -24,7 +24,7 @@ namespace RimWorldLauncher.Views.Main.Edit
             {
                 BtnSave.Content = "Create";
                 Title = "Create profile";
-                CbModpack.SelectedItem = App.Modpacks.ObservableModpacksList.FirstOrDefault(modpack => modpack.Identifier == "vanilla");
+                CbModpack.SelectedItem = App.Modpacks.ObservableModpacksList.FirstOrDefault(modpack => modpack.Identifier == Properties.Resources.VanillaModpackName);
             }
             else
             {

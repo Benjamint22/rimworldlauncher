@@ -31,7 +31,7 @@ namespace RimWorldLauncher.Views.Main
 
         private static bool ViewSource_Filter(object modpack)
         {
-            return (modpack as BoundModList)?.Identifier != "vanilla";
+            return (modpack as BoundModList)?.Identifier != Properties.Resources.VanillaModpackName;
         }
 
         private void RefreshInstalledMods()
@@ -112,6 +112,11 @@ namespace RimWorldLauncher.Views.Main
                     MessageBoxButton.YesNo,
                     MessageBoxImage.Warning
                 ) != MessageBoxResult.Yes) return;
+            foreach (var profile in arrProfiles)
+            {
+                profile.BoundModList =
+                    App.Modpacks.ObservableModpacksList.First(modlist => modlist.Identifier == Properties.Resources.VanillaModpackName);
+            }
             modpack?.Delete();
             App.Modpacks.LoadModpacks();
         }
