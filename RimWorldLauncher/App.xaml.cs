@@ -71,7 +71,7 @@ namespace RimWorldLauncher
                     oldModpack.CopyTo(ActiveModsConfig.FetchActiveMods().ToArray(), 0);
                     Modpacks.LoadModpacks();
                     var profile = new BoundProfile("Old profile", oldModpack, "old");
-                    profile.SavesFolder?.Delete();
+                    profile.SavesFolder?.Delete(true);
                     Config.FetchDataFolder().GetDirectories().First(directory =>
                             directory.Name == RimWorldLauncher.Properties.Resources.SavesFolderName)
                         .MoveTo(Path.Combine(profile.ProfileFolder.FullName,
